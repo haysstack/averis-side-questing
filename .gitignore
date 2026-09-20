@@ -10,3 +10,10 @@ frontend/.env.local
 
 __pycache__/
 *.py[cod]
+
+__pycache__/
+*.py[cod]
+
+.env
+.venv/
+venv/
