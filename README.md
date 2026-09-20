@@ -83,3 +83,9 @@ create table reviews (
   corrected_by text,
   corrected_at timestamp
 );
+
+## DATABASE TABLES
+emails         (email_id, from_addr, subject, body, category, priority, ai_summary, status, review_reason)
+extractions    (email_id, doc_type[SI/BL], shipper, consignee, notify_party, port_of_loading, port_of_discharge, container_count, gross_weight_kg, confidence)
+comparisons    (email_id, defect_fields[], has_defect)
+reviews        (email_id, reason, confidence, resolved, corrected_by, corrected_at)
