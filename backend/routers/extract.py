@@ -1214,6 +1214,26 @@ def _to_db_row(
 # ---------------------------------------------------------------------------
 # EXTRACT SINGLE EMAIL
 # ---------------------------------------------------------------------------
+PARSE_PROBLEMS = {
+    "fetch_failed": "could not be downloaded",
+    "parse_failed": "could not be parsed",
+    "scanned_no_text": "is a scan with no readable text",
+    "empty": "had no readable content",
+    "unsupported_format": "has an unsupported file format",
+}
+
+
+def _set_extraction_reason(email_id: str, reason: Optional[str]) -> None:
+    """Save why extraction did not fully work, so the page can show it."""
+    table = supabase.table("emails")
+    try:
+        if reason:
+            table.update({"review_reason": f"Extraction: {reason}"}).eq("email_id", email_id).execute()
+        else:  # clear only reasons this code wrote
+            table.update({"review_reason": None}).eq("email_id", email_id).like("review_reason", "Extraction:%").execute()
+    except Exception:
+        pass  # a missing reason must never break extraction
+
 
 @router.post("/extract/{email_id}")
 async def extract_email(
@@ -1310,7 +1330,9 @@ async def extract_email(
         # -----------------------------------------------------------
 
         if len(attachments) < 2:
-
+            if not dry_run:
+                _set_extraction_reason(email_id, f"expected 2 attachments (SI and BL), found {len(attachments)}")
+            
             return {
                 "email_id": email_id,
                 "skipped": True,
@@ -1340,6 +1362,9 @@ async def extract_email(
         )
 
         if not si_path or not bl_path:
+
+            if not dry_run:
+                _set_extraction_reason(email_id, "could not tell which attachment is the SI and which is the BL from the file names")
 
             return {
                 "email_id": email_id,
@@ -1411,6 +1436,14 @@ async def extract_email(
             500,
             f"Could not save extraction to Supabase: {error}"
         )
+
+    problems = [
+        f"{name} {PARSE_PROBLEMS[row['_parse_method']]}"
+        for name, row in (("SI", si_row), ("BL", bl_row))
+        if row.get("_parse_method") in PARSE_PROBLEMS
+    ]
+    
+    _set_extraction_reason(email_id, "; ".join(problems) or None)
 
     return {
         "email_id": email_id,
@@ -1544,3 +1577,11 @@ async def extract_batch(
         "skipped": skipped,
         "failed": failed,
     }
+
+@router.get("/extractions")
+async def list_extractions(email_ids: Optional[str] = Query(default=None)):
+    """Return extraction rows, optionally only for a comma-separated list of email ids."""
+    query = supabase.table("extractions").select("*")
+    if email_ids:
+        query = query.in_("email_id", [e for e in email_ids.split(",") if e])
+    return query.execute().data or []
