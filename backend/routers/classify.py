@@ -1,15 +1,13 @@
 import os
-import httpx
-
+from collections import Counter
 from pathlib import Path
-from typing import Optional
-from typing import Literal
+from typing import Literal, Optional
+
+import httpx
 from google import genai
-from db import supabase           # still works — Python looks from where you run uvicorn (backend/), not from the file's own folder
-from data_source import get_email, get_attachment_text
-from pydantic import BaseModel
 from dotenv import load_dotenv
 from fastapi import APIRouter, HTTPException, Query
+from pydantic import BaseModel
 from supabase import Client, create_client
 
 
@@ -38,6 +36,7 @@ supabase: Client = create_client(
 )
 
 router = APIRouter(tags=["Classification & Priority"])
+
 
 class ClassificationResult(BaseModel):
     category: Literal[
@@ -117,6 +116,9 @@ async def classify_email(email_id: str):
             detail=f"Could not fetch email from Docker inbox: {error}",
         )
 
+    # Email signatures and forwarded threads can be long. This keeps the
+    # on-demand classification request fast while preserving the original body
+    # in Supabase for the detail view.
     body = email.get("body", "")[:2500]
     prompt = f"""
 You are classifying an email for a shipping-operations team.
@@ -233,6 +235,27 @@ async def get_email(email_id: str):
         raise HTTPException(status_code=404, detail="Email not found")
 
     return result.data
+
+
+@router.get("/classification/stats")
+async def classification_stats():
+    """Return lightweight counts for testing the lazy-classification flow."""
+    result = supabase.table("emails").select(
+        "category,priority,status"
+    ).execute()
+    emails = result.data or []
+
+    return {
+        "total": len(emails),
+        "by_status": dict(Counter(email.get("status") or "UNKNOWN" for email in emails)),
+        "by_category": dict(
+            Counter(email.get("category") or "UNCLASSIFIED" for email in emails)
+        ),
+        "by_priority": dict(
+            Counter(email.get("priority") or "UNASSIGNED" for email in emails)
+        ),
+    }
+
 
 @router.post("/classify-pending")
 async def classify_pending(
