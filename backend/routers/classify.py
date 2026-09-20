@@ -99,8 +99,32 @@ async def seed_emails():
     }
 
 @router.post("/classify/{email_id}")
-async def classify_email(email_id: str):
-    """Classify one email and save its initial priority and summary."""
+async def classify_email(
+    email_id: str,
+    force: bool = Query(default=False),
+):
+    """Classify one email and save its initial priority and summary.
+
+    A previously classified email returns its saved result unless force=true.
+    This keeps the inbox from spending another Gemini request when users reopen an email.
+    """
+
+    existing = (
+        supabase.table("emails")
+        .select("email_id,category,priority,ai_summary,status")
+        .eq("email_id", email_id)
+        .maybe_single()
+        .execute()
+    )
+
+    if existing.data and existing.data.get("status") == "CLASSIFIED" and not force:
+        return {
+            "email_id": email_id,
+            "category": existing.data.get("category"),
+            "priority": existing.data.get("priority"),
+            "summary": existing.data.get("ai_summary"),
+            "cached": True,
+        }
 
     try:
         async with httpx.AsyncClient(timeout=30) as http_client:
@@ -194,6 +218,7 @@ Body:
         "category": result.category,
         "priority": result.priority,
         "summary": result.summary,
+        "cached": False,
     }
 
 
@@ -239,7 +264,7 @@ async def get_email(email_id: str):
 
 @router.get("/classification/stats")
 async def classification_stats():
-    """Return lightweight counts for testing the lazy-classification flow."""
+    """Return lightweight counts for testing the efficient-classification flow."""
     result = supabase.table("emails").select(
         "category,priority,status"
     ).execute()
