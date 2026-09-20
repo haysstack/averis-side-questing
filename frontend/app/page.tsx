@@ -275,41 +275,37 @@ const INITIAL_PREVIEW_ITEMS: ReviewItem[] = [
   },
 ];
 
-const REASON_COLORS: Record<string, { bg: string; text: string; border: string; icon: string; label: string }> = {
+const REASON_COLORS: Record<string, { bg: string; text: string; border: string; label: string }> = {
   wrong_doc_type: {
-    bg: "bg-purple-950/50",
-    text: "text-purple-300",
-    border: "border-purple-800/50",
-    icon: "📄",
+    bg: "bg-[#FFE7B7]/40",
+    text: "text-[#F6983E]",
+    border: "border-[#FDD58D]",
     label: "Wrong Doc Type",
   },
   missing_attachment: {
-    bg: "bg-amber-950/50",
-    text: "text-amber-300",
-    border: "border-amber-800/50",
-    icon: "⚠️",
+    bg: "bg-[#FFE7B7]/40",
+    text: "text-[#F6983E]",
+    border: "border-[#FDD58D]",
     label: "Missing Attachment",
   },
   unreadable: {
-    bg: "bg-rose-950/50",
-    text: "text-rose-300",
-    border: "border-rose-800/50",
-    icon: "🚫",
+    bg: "bg-[#FFE7B7]/40",
+    text: "text-[#F6983E]",
+    border: "border-[#FDD58D]",
     label: "Unreadable File",
   },
   missing_value: {
-    bg: "bg-cyan-950/50",
-    text: "text-cyan-300",
-    border: "border-cyan-800/50",
-    icon: "❓",
+    bg: "bg-[#FFE7B7]/30",
+    text: "text-[#F6983E]",
+    border: "border-[#FDD58D]",
     label: "Missing Field Value",
   },
 };
 
 const PRIORITY_COLORS: Record<string, { bg: string; text: string; border: string }> = {
-  High: { bg: "bg-rose-500/10", text: "text-rose-400", border: "border-rose-500/20" },
-  Medium: { bg: "bg-amber-500/10", text: "text-amber-400", border: "border-amber-500/20" },
-  Low: { bg: "bg-blue-500/10", text: "text-blue-400", border: "border-blue-500/20" },
+  High: { bg: "bg-[#FFE7B7]/50", text: "text-[#F6983E]", border: "border-[#FDD58D]" },
+  Medium: { bg: "bg-slate-50", text: "text-[#6F8AB7]", border: "border-slate-200" },
+  Low: { bg: "bg-slate-50", text: "text-slate-600", border: "border-slate-200" },
 };
 
 const CATEGORIES = ["ALL", "BL_COMPARISON", "SI_REQUEST", "INVOICE_QUERY", "GENERAL", "SPAM"];
@@ -451,7 +447,7 @@ export default function ReviewQueuePage() {
       })
     );
 
-    setSuccessToast(`✓ Review for ${emailId} successfully RESOLVED (${outcomeLabel})`);
+    setSuccessToast(`Review for ${emailId} successfully RESOLVED (${outcomeLabel})`);
     setSelectedItem(null);
     setResolutionNotes("");
 
@@ -474,173 +470,155 @@ export default function ReviewQueuePage() {
   const resolvedCount = items.filter((i) => i.resolved).length;
 
   return (
-    <div className="min-h-screen bg-slate-950 text-slate-100 flex flex-col font-sans">
+    <div className="min-h-screen bg-white text-slate-800 flex flex-col font-sans">
       {/* Navigation Header */}
-      <header className="border-b border-slate-800 bg-slate-900/80 backdrop-blur sticky top-0 z-20">
-        <div className="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between">
+      <header className="border-b border-slate-200 bg-white sticky top-0 z-20">
+        <div className="max-w-7xl mx-auto px-6 h-14 flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <div className="w-8 h-8 rounded-lg bg-indigo-600 flex items-center justify-center font-bold text-white shadow-lg shadow-indigo-500/30">
+            <div className="w-7 h-7 rounded bg-[#485C8B] flex items-center justify-center font-bold text-white text-xs tracking-wider">
               SD
             </div>
             <div>
-              <h1 className="font-semibold text-slate-100 text-sm leading-none">
+              <h1 className="font-semibold text-[#485C8B] text-sm leading-tight">
                 Shipping Document Verification System
               </h1>
-              <span className="text-xs text-slate-400">Operations Control Centre — Person D</span>
+              <span className="text-xs text-[#6F8AB7]">Operations Control Centre — Person D</span>
             </div>
           </div>
-          <div className="flex items-center gap-3 text-xs">
-            <div className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-amber-500/10 border border-amber-500/30 text-amber-300 font-medium">
-              <span className="w-2 h-2 rounded-full bg-amber-400 animate-pulse"></span>
+          <div className="flex items-center gap-2 text-xs">
+            <span className="px-2.5 py-1 rounded text-xs font-medium border border-[#FDD58D] bg-[#FFE7B7]/30 text-[#485C8B]">
               Static Preview Dataset (Offline Mode)
-            </div>
+            </span>
           </div>
         </div>
       </header>
 
       {/* Toast Notification */}
       {successToast && (
-        <div className="fixed top-20 right-6 z-50 bg-emerald-950 border border-emerald-500/50 text-emerald-200 px-5 py-3 rounded-xl shadow-2xl flex items-center gap-3 text-sm animate-bounce">
+        <div className="fixed top-16 right-6 z-50 bg-white border border-[#6F8AB7] text-[#485C8B] px-4 py-2.5 rounded shadow-sm flex items-center gap-2 text-xs font-medium">
+          <span className="text-[#6F8AB7]">✓</span>
           <span>{successToast}</span>
         </div>
       )}
 
       {/* Main Content */}
-      <main className="max-w-7xl mx-auto w-full px-6 py-8 flex-1 flex flex-col gap-6">
-        {/* Banner Section */}
-        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 bg-gradient-to-r from-slate-900 via-indigo-950/40 to-slate-900 p-6 rounded-2xl border border-slate-800/80 shadow-xl">
+      <main className="max-w-7xl mx-auto w-full px-6 py-6 flex-1 flex flex-col gap-5">
+        {/* Operations Header */}
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-slate-200 pb-4">
           <div>
-            <div className="inline-flex items-center gap-2 px-2.5 py-1 rounded-full bg-indigo-500/10 border border-indigo-500/20 text-indigo-400 text-xs font-medium mb-2">
-              Operations Dashboard
-            </div>
-            <h2 className="text-2xl font-bold text-white tracking-tight">Shipping Operations Control Centre</h2>
-            <p className="text-sm text-slate-400 mt-1 max-w-2xl">
+            <h2 className="text-xl font-bold text-[#485C8B] tracking-tight">Shipping Operations Control Centre</h2>
+            <p className="text-xs text-[#6F8AB7] mt-0.5 max-w-2xl">
               End-to-end verification pipeline metrics, edge-case breakdown, and reason-specific human resolution.
             </p>
+          </div>
+          <div className="flex items-center gap-2">
+            <span className="text-xs text-slate-500 font-medium">Queue Status:</span>
+            <span className="inline-flex items-center px-2.5 py-0.5 rounded text-xs font-semibold bg-[#FFE7B7]/40 border border-[#FDD58D] text-[#F6983E]">
+              {unresolvedCount} Actions Pending
+            </span>
           </div>
         </div>
 
         {/* Operations Overview Summary Cards */}
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-          <div className="bg-slate-900/60 p-5 rounded-2xl border border-slate-800 shadow-lg flex flex-col justify-between">
-            <span className="text-xs font-medium text-slate-400">Total Emails</span>
-            <div className="mt-3 flex items-baseline justify-between">
-              <span className="text-3xl font-extrabold text-white">520</span>
-              <span className="text-xs text-slate-500 font-mono">100% Dataset</span>
+          <div className="bg-white p-4 rounded border border-slate-200 flex flex-col justify-between">
+            <span className="text-xs font-medium text-[#6F8AB7]">Total Processed Emails</span>
+            <div className="mt-2 flex items-baseline justify-between">
+              <span className="text-2xl font-bold text-[#485C8B]">520</span>
+              <span className="text-xs text-slate-400 font-mono">100% Volume</span>
             </div>
           </div>
 
-          <div className="bg-slate-900/60 p-5 rounded-2xl border border-rose-950/60 shadow-lg flex flex-col justify-between">
-            <span className="text-xs font-medium text-rose-400 flex items-center gap-1.5">
-              <span className="w-2 h-2 rounded-full bg-rose-500 animate-pulse"></span>
-              Needs Review
-            </span>
-            <div className="mt-3 flex items-baseline justify-between">
-              <span className="text-3xl font-extrabold text-rose-400">42</span>
-              <span className="text-xs text-rose-400/70 font-mono">8.1% Escalated</span>
+          <div className="bg-white p-4 rounded border border-slate-200 border-l-4 border-l-[#F6983E] flex flex-col justify-between">
+            <span className="text-xs font-medium text-[#F6983E]">Needs Human Review</span>
+            <div className="mt-2 flex items-baseline justify-between">
+              <span className="text-2xl font-bold text-[#F6983E]">42</span>
+              <span className="text-xs text-[#F6983E] font-medium">8.1% Escalated</span>
             </div>
           </div>
 
-          <div className="bg-slate-900/60 p-5 rounded-2xl border border-emerald-950/60 shadow-lg flex flex-col justify-between">
-            <span className="text-xs font-medium text-emerald-400 flex items-center gap-1.5">
-              <span className="w-2 h-2 rounded-full bg-emerald-500"></span>
-              Verified Clean
-            </span>
-            <div className="mt-3 flex items-baseline justify-between">
-              <span className="text-3xl font-extrabold text-emerald-400">318</span>
-              <span className="text-xs text-emerald-400/70 font-mono">61.2% Auto-Pass</span>
+          <div className="bg-white p-4 rounded border border-slate-200 flex flex-col justify-between">
+            <span className="text-xs font-medium text-[#6F8AB7]">Verified Clean</span>
+            <div className="mt-2 flex items-baseline justify-between">
+              <span className="text-2xl font-bold text-[#485C8B]">318</span>
+              <span className="text-xs text-slate-500 font-mono">61.2% Auto-Pass</span>
             </div>
           </div>
 
-          <div className="bg-slate-900/60 p-5 rounded-2xl border border-blue-950/60 shadow-lg flex flex-col justify-between">
-            <span className="text-xs font-medium text-blue-400 flex items-center gap-1.5">
-              <span className="w-2 h-2 rounded-full bg-blue-500"></span>
-              In Processing
-            </span>
-            <div className="mt-3 flex items-baseline justify-between">
-              <span className="text-3xl font-extrabold text-blue-400">160</span>
-              <span className="text-xs text-blue-400/70 font-mono">30.7% In Stage 1/2</span>
+          <div className="bg-white p-4 rounded border border-slate-200 flex flex-col justify-between">
+            <span className="text-xs font-medium text-[#6F8AB7]">In Processing</span>
+            <div className="mt-2 flex items-baseline justify-between">
+              <span className="text-2xl font-bold text-[#485C8B]">160</span>
+              <span className="text-xs text-slate-500 font-mono">30.7% Stage 1/2</span>
             </div>
           </div>
         </div>
 
-        {/* Review Reasons Breakdown & Pipeline Health Bar */}
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-          <div className="lg:col-span-2 bg-slate-900/60 p-5 rounded-2xl border border-slate-800 shadow-xl flex flex-col gap-4">
-            <div className="flex items-center justify-between">
-              <h3 className="text-sm font-bold text-slate-200 uppercase tracking-wider">
+        {/* Review Reasons Breakdown & Pipeline Health */}
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
+          <div className="lg:col-span-2 bg-white p-4 rounded border border-slate-200 flex flex-col gap-3">
+            <div className="flex items-center justify-between border-b border-slate-100 pb-2.5">
+              <h3 className="text-xs font-bold text-[#485C8B] uppercase tracking-wider">
                 Review Reasons Breakdown
               </h3>
-              <span className="text-xs text-slate-400">Total Escalated: 42 Items</span>
+              <span className="text-xs text-[#6F8AB7]">Total Escalated: 42 Items</span>
             </div>
 
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-              <div className="p-3.5 rounded-xl bg-purple-950/30 border border-purple-800/40 flex flex-col gap-1">
-                <div className="flex items-center justify-between text-purple-300 text-xs font-medium">
-                  <span>Wrong Doc Type</span>
-                  <span>📄</span>
-                </div>
-                <span className="text-2xl font-bold text-purple-200 mt-1">5</span>
-                <span className="text-[10px] text-purple-400/70">Invoice / Packing List</span>
+              <div className="p-3 rounded border border-slate-200 bg-white flex flex-col gap-1">
+                <span className="text-xs font-medium text-slate-600">Wrong Doc Type</span>
+                <span className="text-xl font-bold text-[#485C8B]">5</span>
+                <span className="text-[11px] text-slate-400">Invoice / Packing List</span>
               </div>
 
-              <div className="p-3.5 rounded-xl bg-amber-950/30 border border-amber-800/40 flex flex-col gap-1">
-                <div className="flex items-center justify-between text-amber-300 text-xs font-medium">
-                  <span>Missing Attachment</span>
-                  <span>⚠️</span>
-                </div>
-                <span className="text-2xl font-bold text-amber-200 mt-1">8</span>
-                <span className="text-[10px] text-amber-400/70">Single File Received</span>
+              <div className="p-3 rounded border border-[#FDD58D] bg-[#FFE7B7]/20 flex flex-col gap-1">
+                <span className="text-xs font-medium text-[#F6983E]">Missing Attachment</span>
+                <span className="text-xl font-bold text-[#F6983E]">8</span>
+                <span className="text-[11px] text-slate-500">Single File Received</span>
               </div>
 
-              <div className="p-3.5 rounded-xl bg-rose-950/30 border border-rose-800/40 flex flex-col gap-1">
-                <div className="flex items-center justify-between text-rose-300 text-xs font-medium">
-                  <span>Unreadable File</span>
-                  <span>🚫</span>
-                </div>
-                <span className="text-2xl font-bold text-rose-200 mt-1">11</span>
-                <span className="text-[10px] text-rose-400/70">Scanned / 0 Bytes</span>
+              <div className="p-3 rounded border border-[#FDD58D] bg-[#FFE7B7]/20 flex flex-col gap-1">
+                <span className="text-xs font-medium text-[#F6983E]">Unreadable File</span>
+                <span className="text-xl font-bold text-[#F6983E]">11</span>
+                <span className="text-[11px] text-slate-500">Scanned / 0 Bytes</span>
               </div>
 
-              <div className="p-3.5 rounded-xl bg-cyan-950/30 border border-cyan-800/40 flex flex-col gap-1">
-                <div className="flex items-center justify-between text-cyan-300 text-xs font-medium">
-                  <span>Missing Value</span>
-                  <span>❓</span>
-                </div>
-                <span className="text-2xl font-bold text-cyan-200 mt-1">18</span>
-                <span className="text-[10px] text-cyan-400/70">Blank Token ??? / ____</span>
+              <div className="p-3 rounded border border-slate-200 bg-white flex flex-col gap-1">
+                <span className="text-xs font-medium text-slate-600">Missing Value</span>
+                <span className="text-xl font-bold text-[#485C8B]">18</span>
+                <span className="text-[11px] text-slate-400">Blank Token ??? / ____</span>
               </div>
             </div>
           </div>
 
-          <div className="bg-slate-900/60 p-5 rounded-2xl border border-slate-800 shadow-xl flex flex-col justify-between gap-4">
-            <div className="flex items-center justify-between">
-              <h3 className="text-sm font-bold text-slate-200 uppercase tracking-wider">
+          <div className="bg-white p-4 rounded border border-slate-200 flex flex-col justify-between gap-3">
+            <div className="flex items-center justify-between border-b border-slate-100 pb-2.5">
+              <h3 className="text-xs font-bold text-[#485C8B] uppercase tracking-wider">
                 Review Pipeline Health
               </h3>
-              <span className="px-2 py-0.5 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 text-[11px] font-semibold">
+              <span className="px-2 py-0.5 rounded text-[11px] font-semibold bg-slate-100 text-[#485C8B]">
                 91.9% Operational
               </span>
             </div>
 
             <div className="space-y-3">
-              <div className="h-3 w-full bg-slate-950 rounded-full overflow-hidden flex border border-slate-800">
-                <div className="h-full bg-emerald-500" style={{ width: "61.2%" }} title="Verified Clean: 61.2%"></div>
-                <div className="h-full bg-blue-500" style={{ width: "30.7%" }} title="Processing: 30.7%"></div>
-                <div className="h-full bg-rose-500" style={{ width: "8.1%" }} title="Needs Review: 8.1%"></div>
+              <div className="h-2 w-full bg-slate-100 rounded-full overflow-hidden flex border border-slate-200">
+                <div className="h-full bg-[#485C8B]" style={{ width: "61.2%" }} title="Verified Clean: 61.2%"></div>
+                <div className="h-full bg-[#6F8AB7]" style={{ width: "30.7%" }} title="Processing: 30.7%"></div>
+                <div className="h-full bg-[#F6983E]" style={{ width: "8.1%" }} title="Needs Review: 8.1%"></div>
               </div>
 
               <div className="grid grid-cols-3 gap-2 text-[11px]">
-                <div className="flex items-center gap-1.5 text-slate-300">
-                  <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 inline-block"></span>
+                <div className="flex items-center gap-1.5 text-slate-600">
+                  <span className="w-2 h-2 rounded-full bg-[#485C8B] inline-block"></span>
                   <span>Verified: 61.2%</span>
                 </div>
-                <div className="flex items-center gap-1.5 text-slate-300">
-                  <span className="w-2.5 h-2.5 rounded-full bg-blue-500 inline-block"></span>
+                <div className="flex items-center gap-1.5 text-slate-600">
+                  <span className="w-2 h-2 rounded-full bg-[#6F8AB7] inline-block"></span>
                   <span>Processing: 30.7%</span>
                 </div>
-                <div className="flex items-center gap-1.5 text-slate-300">
-                  <span className="w-2.5 h-2.5 rounded-full bg-rose-500 inline-block"></span>
+                <div className="flex items-center gap-1.5 text-slate-600">
+                  <span className="w-2 h-2 rounded-full bg-[#F6983E] inline-block"></span>
                   <span>Review: 8.1%</span>
                 </div>
               </div>
@@ -649,36 +627,46 @@ export default function ReviewQueuePage() {
         </div>
 
         {/* Queue Header & Tab Switcher */}
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pt-2">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pt-2">
           <div>
-            <h3 className="text-lg font-bold text-white">Review & Resolution Worklist</h3>
-            <p className="text-xs text-slate-400">Select any item to inspect reason-specific evidence and resolve.</p>
+            <h3 className="text-base font-bold text-[#485C8B]">Review & Resolution Worklist</h3>
+            <p className="text-xs text-slate-500">Select any record to inspect evidence and execute a resolution action.</p>
           </div>
 
-          <div className="flex items-center bg-slate-950 p-1 rounded-xl border border-slate-800">
+          <div className="flex items-center bg-slate-100 p-1 rounded border border-slate-200">
             <button
+              type="button"
               onClick={() => setActiveTab("active")}
-              className={`px-4 py-2 rounded-lg text-xs font-semibold transition-all flex items-center gap-2 ${
+              className={`px-3 py-1.5 rounded text-xs font-semibold transition-colors flex items-center gap-2 ${
                 activeTab === "active"
-                  ? "bg-indigo-600 text-white shadow-md"
-                  : "text-slate-400 hover:text-slate-200"
+                  ? "bg-[#485C8B] text-white"
+                  : "text-slate-600 hover:text-slate-900"
               }`}
             >
               <span>Pending Queue</span>
-              <span className="px-1.5 py-0.5 rounded-full bg-slate-900/60 text-[10px]">
+              <span
+                className={`px-1.5 py-0.5 rounded text-[10px] font-bold ${
+                  activeTab === "active" ? "bg-white/20 text-white" : "bg-slate-200 text-slate-700"
+                }`}
+              >
                 {unresolvedCount}
               </span>
             </button>
             <button
+              type="button"
               onClick={() => setActiveTab("resolved")}
-              className={`px-4 py-2 rounded-lg text-xs font-semibold transition-all flex items-center gap-2 ${
+              className={`px-3 py-1.5 rounded text-xs font-semibold transition-colors flex items-center gap-2 ${
                 activeTab === "resolved"
-                  ? "bg-emerald-600 text-white shadow-md"
-                  : "text-slate-400 hover:text-slate-200"
+                  ? "bg-[#6F8AB7] text-white"
+                  : "text-slate-600 hover:text-slate-900"
               }`}
             >
               <span>Resolved History</span>
-              <span className="px-1.5 py-0.5 rounded-full bg-slate-900/60 text-[10px]">
+              <span
+                className={`px-1.5 py-0.5 rounded text-[10px] font-bold ${
+                  activeTab === "resolved" ? "bg-white/20 text-white" : "bg-slate-200 text-slate-700"
+                }`}
+              >
                 {resolvedCount}
               </span>
             </button>
@@ -686,24 +674,24 @@ export default function ReviewQueuePage() {
         </div>
 
         {/* Filters & Search Bar */}
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 bg-slate-900/50 p-4 rounded-xl border border-slate-800">
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 bg-white p-3.5 rounded border border-slate-200">
           <div>
-            <label className="block text-xs font-medium text-slate-400 mb-1.5">Search Subject / ID</label>
+            <label className="block text-xs font-medium text-slate-600 mb-1">Search Record</label>
             <input
               type="text"
-              placeholder="Search email_id or subject..."
+              placeholder="Filter by email_id or subject..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full px-3.5 py-2 rounded-lg bg-slate-950 border border-slate-800 text-sm text-slate-200 placeholder-slate-500 focus:outline-none focus:border-indigo-500 transition-colors"
+              className="w-full px-3 py-1.5 rounded bg-white border border-slate-200 text-xs text-slate-800 placeholder-slate-400 focus:outline-none focus:border-[#485C8B]"
             />
           </div>
 
           <div>
-            <label className="block text-xs font-medium text-slate-400 mb-1.5">Category</label>
+            <label className="block text-xs font-medium text-slate-600 mb-1">Category</label>
             <select
               value={categoryFilter}
               onChange={(e) => setCategoryFilter(e.target.value)}
-              className="w-full px-3.5 py-2 rounded-lg bg-slate-950 border border-slate-800 text-sm text-slate-200 focus:outline-none focus:border-indigo-500 transition-colors"
+              className="w-full px-3 py-1.5 rounded bg-white border border-slate-200 text-xs text-slate-800 focus:outline-none focus:border-[#485C8B]"
             >
               {CATEGORIES.map((c) => (
                 <option key={c} value={c}>
@@ -714,11 +702,11 @@ export default function ReviewQueuePage() {
           </div>
 
           <div>
-            <label className="block text-xs font-medium text-slate-400 mb-1.5">Review Reason</label>
+            <label className="block text-xs font-medium text-slate-600 mb-1">Review Reason</label>
             <select
               value={reasonFilter}
               onChange={(e) => setReasonFilter(e.target.value)}
-              className="w-full px-3.5 py-2 rounded-lg bg-slate-950 border border-slate-800 text-sm text-slate-200 focus:outline-none focus:border-indigo-500 transition-colors"
+              className="w-full px-3 py-1.5 rounded bg-white border border-slate-200 text-xs text-slate-800 focus:outline-none focus:border-[#485C8B]"
             >
               {REASONS.map((r) => (
                 <option key={r} value={r}>
@@ -730,14 +718,13 @@ export default function ReviewQueuePage() {
         </div>
 
         {/* Queue Table */}
-        <div className="bg-slate-900/60 rounded-2xl border border-slate-800 overflow-hidden shadow-xl">
+        <div className="bg-white rounded border border-slate-200 overflow-hidden">
           {filteredItems.length === 0 ? (
-            <div className="p-16 text-center">
-              <div className="text-3xl mb-2">{activeTab === "active" ? "🎉" : "📋"}</div>
-              <h3 className="text-slate-200 font-semibold text-base">
+            <div className="p-12 text-center">
+              <h3 className="text-slate-700 font-semibold text-sm">
                 {activeTab === "active" ? "No Pending Reviews" : "No Resolved Items"}
               </h3>
-              <p className="text-slate-400 text-xs mt-1">
+              <p className="text-slate-500 text-xs mt-1">
                 {activeTab === "active"
                   ? "All review items have been resolved or filtered out."
                   : "Items you resolve will appear in this history tab."}
@@ -747,88 +734,85 @@ export default function ReviewQueuePage() {
             <div className="overflow-x-auto">
               <table className="w-full text-left border-collapse">
                 <thead>
-                  <tr className="border-b border-slate-800 bg-slate-900/90 text-slate-400 text-xs uppercase tracking-wider font-semibold">
-                    <th className="px-6 py-3.5">Email ID</th>
-                    <th className="px-6 py-3.5">Subject</th>
-                    <th className="px-6 py-3.5">Category</th>
-                    <th className="px-6 py-3.5">Priority</th>
-                    <th className="px-6 py-3.5">Review Reason</th>
-                    <th className="px-6 py-3.5">Status</th>
-                    <th className="px-6 py-3.5 text-right">Action</th>
+                  <tr className="border-b border-slate-200 bg-slate-50 text-slate-600 text-xs uppercase tracking-wider font-semibold">
+                    <th className="px-5 py-3">Email ID</th>
+                    <th className="px-5 py-3">Subject</th>
+                    <th className="px-5 py-3">Category</th>
+                    <th className="px-5 py-3">Priority</th>
+                    <th className="px-5 py-3">Review Reason</th>
+                    <th className="px-5 py-3">Status</th>
+                    <th className="px-5 py-3 text-right">Action</th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-slate-800/60 text-sm">
+                <tbody className="divide-y divide-slate-100 text-xs">
                   {filteredItems.map((item) => {
                     const rMeta = REASON_COLORS[item.review_reason] || {
-                      bg: "bg-slate-800",
-                      text: "text-slate-300",
-                      border: "border-slate-700",
-                      icon: "⚠️",
+                      bg: "bg-slate-50",
+                      text: "text-slate-700",
+                      border: "border-slate-200",
                       label: item.review_reason,
                     };
                     const pMeta = PRIORITY_COLORS[item.priority] || {
-                      bg: "bg-slate-800",
-                      text: "text-slate-300",
-                      border: "border-slate-700",
+                      bg: "bg-slate-50",
+                      text: "text-slate-700",
+                      border: "border-slate-200",
                     };
                     return (
                       <tr
                         key={item.email_id}
                         onClick={() => handleOpenModal(item)}
-                        className="hover:bg-indigo-950/20 cursor-pointer transition-colors group"
+                        className="hover:bg-slate-50/80 cursor-pointer transition-colors"
                       >
-                        <td className="px-6 py-4 font-mono text-xs font-semibold text-indigo-400">
+                        <td className="px-5 py-3.5 font-mono font-semibold text-[#485C8B]">
                           {item.email_id}
                         </td>
-                        <td className="px-6 py-4 text-slate-200 font-medium group-hover:text-white transition-colors max-w-xs truncate">
+                        <td className="px-5 py-3.5 text-slate-800 font-medium max-w-xs truncate">
                           {item.subject}
                         </td>
-                        <td className="px-6 py-4">
-                          <span className="px-2.5 py-1 rounded-md bg-slate-800 border border-slate-700 text-slate-300 text-xs font-medium">
+                        <td className="px-5 py-3.5">
+                          <span className="px-2 py-0.5 rounded bg-slate-50 border border-slate-200 text-slate-600 text-[11px] font-medium">
                             {item.category}
                           </span>
                         </td>
-                        <td className="px-6 py-4">
+                        <td className="px-5 py-3.5">
                           <span
-                            className={`px-2.5 py-1 rounded-full text-xs font-semibold border ${pMeta.bg} ${pMeta.text} ${pMeta.border}`}
+                            className={`px-2 py-0.5 rounded text-[11px] font-semibold border ${pMeta.bg} ${pMeta.text} ${pMeta.border}`}
                           >
                             {item.priority}
                           </span>
                         </td>
-                        <td className="px-6 py-4">
+                        <td className="px-5 py-3.5">
                           <span
-                            className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-medium border ${rMeta.bg} ${rMeta.text} ${rMeta.border}`}
+                            className={`inline-flex items-center px-2 py-0.5 rounded text-[11px] font-medium border ${rMeta.bg} ${rMeta.text} ${rMeta.border}`}
                           >
-                            <span>{rMeta.icon}</span>
-                            <span>{rMeta.label}</span>
+                            {rMeta.label}
                           </span>
                         </td>
-                        <td className="px-6 py-4">
+                        <td className="px-5 py-3.5">
                           {item.resolved ? (
-                            <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 text-xs font-medium">
-                              <span className="w-1.5 h-1.5 rounded-full bg-emerald-400"></span>
+                            <span className="inline-flex items-center px-2 py-0.5 rounded bg-slate-50 border border-[#6F8AB7]/40 text-[#6F8AB7] text-[11px] font-medium">
                               RESOLVED ({item.resolutionOutcome})
                             </span>
                           ) : (
-                            <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-rose-500/10 border border-rose-500/20 text-rose-400 text-xs font-medium">
-                              <span className="w-1.5 h-1.5 rounded-full bg-rose-400"></span>
+                            <span className="inline-flex items-center px-2 py-0.5 rounded bg-[#FFE7B7]/40 border border-[#FDD58D] text-[#F6983E] text-[11px] font-medium">
                               {item.status}
                             </span>
                           )}
                         </td>
-                        <td className="px-6 py-4 text-right">
+                        <td className="px-5 py-3.5 text-right">
                           <button
+                            type="button"
                             onClick={(e) => {
                               e.stopPropagation();
                               handleOpenModal(item);
                             }}
-                            className={`px-3 py-1.5 rounded-lg border text-xs font-medium transition-all ${
+                            className={`px-3 py-1 rounded border text-xs font-medium transition-colors ${
                               item.resolved
-                                ? "bg-slate-800 border-slate-700 text-slate-400 hover:text-white"
-                                : "bg-indigo-600/20 hover:bg-indigo-600 border-indigo-500/30 hover:border-indigo-500 text-indigo-300 hover:text-white"
+                                ? "bg-white border-slate-200 text-slate-600 hover:bg-slate-50"
+                                : "bg-[#485C8B] hover:bg-[#3b4c73] border-[#485C8B] text-white"
                             }`}
                           >
-                            {item.resolved ? "View Resolution" : "Review Item"}
+                            {item.resolved ? "View Details" : "Review"}
                           </button>
                         </td>
                       </tr>
@@ -843,57 +827,58 @@ export default function ReviewQueuePage() {
 
       {/* Reason-Specific Review / Resolve Modal */}
       {selectedItem && (
-        <div className="fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-sm flex items-center justify-center p-4">
-          <div className="bg-slate-900 border border-slate-800 rounded-2xl max-w-3xl w-full p-6 shadow-2xl flex flex-col gap-5 max-h-[90vh] overflow-y-auto">
+        <div className="fixed inset-0 z-50 bg-slate-900/40 flex items-center justify-center p-4">
+          <div className="bg-white border border-slate-200 rounded-lg max-w-3xl w-full p-6 shadow-xl flex flex-col gap-4 max-h-[90vh] overflow-y-auto text-slate-800">
             {/* Modal Header */}
-            <div className="flex items-start justify-between border-b border-slate-800 pb-4">
+            <div className="flex items-start justify-between border-b border-slate-200 pb-3">
               <div>
-                <span className="font-mono text-xs font-semibold text-indigo-400">
+                <span className="font-mono text-xs font-semibold text-[#6F8AB7]">
                   {selectedItem.email_id}
                 </span>
-                <h3 className="text-lg font-bold text-white mt-1">{selectedItem.subject}</h3>
+                <h3 className="text-lg font-bold text-[#485C8B] mt-0.5">{selectedItem.subject}</h3>
               </div>
               <button
+                type="button"
                 onClick={() => setSelectedItem(null)}
-                className="text-slate-400 hover:text-white text-xl p-1"
+                className="text-slate-400 hover:text-slate-700 text-lg p-1"
               >
                 ✕
               </button>
             </div>
 
-            {/* 6 Required Fields Summary Grid */}
-            <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 bg-slate-950 p-4 rounded-xl border border-slate-800 text-xs">
+            {/* Summary Grid */}
+            <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 bg-slate-50 p-3.5 rounded border border-slate-200 text-xs">
               <div>
-                <span className="text-slate-500 block mb-1">Email ID</span>
-                <span className="font-mono font-semibold text-indigo-300">{selectedItem.email_id}</span>
+                <span className="text-slate-500 block mb-0.5">Email ID</span>
+                <span className="font-mono font-semibold text-[#485C8B]">{selectedItem.email_id}</span>
               </div>
               <div>
-                <span className="text-slate-500 block mb-1">Subject</span>
-                <span className="font-medium text-slate-200 truncate block">{selectedItem.subject}</span>
+                <span className="text-slate-500 block mb-0.5">Subject</span>
+                <span className="font-medium text-slate-800 truncate block">{selectedItem.subject}</span>
               </div>
               <div>
-                <span className="text-slate-500 block mb-1">Category</span>
-                <span className="font-medium text-slate-200">{selectedItem.category}</span>
+                <span className="text-slate-500 block mb-0.5">Category</span>
+                <span className="font-medium text-slate-800">{selectedItem.category}</span>
               </div>
               <div>
-                <span className="text-slate-500 block mb-1">Priority</span>
+                <span className="text-slate-500 block mb-0.5">Priority</span>
                 <span
                   className={`font-semibold ${
-                    PRIORITY_COLORS[selectedItem.priority]?.text || "text-slate-200"
+                    PRIORITY_COLORS[selectedItem.priority]?.text || "text-slate-800"
                   }`}
                 >
                   {selectedItem.priority}
                 </span>
               </div>
               <div>
-                <span className="text-slate-500 block mb-1">Review Reason</span>
-                <span className="font-medium text-slate-200">{selectedItem.review_reason}</span>
+                <span className="text-slate-500 block mb-0.5">Review Reason</span>
+                <span className="font-medium text-slate-800">{selectedItem.review_reason}</span>
               </div>
               <div>
-                <span className="text-slate-500 block mb-1">Current Status</span>
+                <span className="text-slate-500 block mb-0.5">Current Status</span>
                 <span
                   className={`font-semibold ${
-                    selectedItem.resolved ? "text-emerald-400" : "text-rose-400"
+                    selectedItem.resolved ? "text-[#6F8AB7]" : "text-[#F6983E]"
                   }`}
                 >
                   {selectedItem.status}
@@ -901,83 +886,63 @@ export default function ReviewQueuePage() {
               </div>
             </div>
 
-            {/* Reason Banner */}
-            <div
-              className={`p-3.5 rounded-xl border flex items-center gap-3 text-xs ${
-                REASON_COLORS[selectedItem.review_reason]?.bg || "bg-slate-800"
-              } ${REASON_COLORS[selectedItem.review_reason]?.border || "border-slate-700"}`}
-            >
-              <span className="text-2xl">
-                {REASON_COLORS[selectedItem.review_reason]?.icon || "⚠️"}
+            {/* Reason Attention Banner */}
+            <div className="p-3 rounded border border-[#FDD58D] bg-[#FFE7B7]/30 text-xs flex flex-col gap-1">
+              <span className="font-semibold text-[#F6983E]">
+                {REASON_COLORS[selectedItem.review_reason]?.label || selectedItem.review_reason}
               </span>
-              <div>
-                <span
-                  className={`font-semibold block ${
-                    REASON_COLORS[selectedItem.review_reason]?.text || "text-slate-200"
-                  }`}
-                >
-                  {REASON_COLORS[selectedItem.review_reason]?.label || selectedItem.review_reason}
-                </span>
-                <p className="text-slate-300 mt-0.5">{selectedItem.evidence.evidence_summary}</p>
-              </div>
+              <p className="text-slate-700">{selectedItem.evidence.evidence_summary}</p>
             </div>
 
-            {/* Shipment Details & Review Evidence Section */}
-            <div className="border border-slate-800 rounded-xl bg-slate-950 overflow-hidden">
-              <div className="bg-slate-900/90 px-4 py-3 border-b border-slate-800 flex items-center justify-between text-xs font-semibold">
-                <span className="text-slate-200">🔍 Shipment Details Evidence (SI vs BL)</span>
-                <div className="flex items-center gap-3 text-slate-400 text-[11px] font-mono">
+            {/* Shipment Details & Evidence Section */}
+            <div className="border border-slate-200 rounded overflow-hidden">
+              <div className="bg-slate-50 px-4 py-2.5 border-b border-slate-200 flex items-center justify-between text-xs font-semibold">
+                <span className="text-[#485C8B]">Shipment Comparison Evidence (SI vs BL)</span>
+                <div className="flex items-center gap-2 text-slate-500 text-[11px] font-mono">
                   <span>SI: {selectedItem.evidence.doc_si_name}</span>
                   <span>|</span>
-                  <span className="text-indigo-400">BL: {selectedItem.evidence.doc_bl_name}</span>
+                  <span className="text-[#485C8B]">BL: {selectedItem.evidence.doc_bl_name}</span>
                 </div>
               </div>
 
-              <div className="p-4 space-y-3">
+              <div className="p-3">
                 <table className="w-full text-left text-xs border-collapse">
                   <thead>
-                    <tr className="border-b border-slate-800 text-slate-500 font-medium">
+                    <tr className="border-b border-slate-200 text-slate-500 font-medium">
                       <th className="py-2 px-3">Field</th>
                       <th className="py-2 px-3">SI Reference (Read-Only)</th>
                       <th className="py-2 px-3">Original BL Value</th>
                       <th className="py-2 px-3">Status</th>
                     </tr>
                   </thead>
-                  <tbody className="divide-y divide-slate-800/50">
+                  <tbody className="divide-y divide-slate-100">
                     {selectedItem.evidence.fields.map((f, idx) => (
                       <tr
                         key={idx}
-                        className={
-                          f.is_mismatch
-                            ? f.is_missing
-                              ? "bg-purple-950/20"
-                              : "bg-amber-950/20"
-                            : "hover:bg-slate-900/50"
-                        }
+                        className={f.is_mismatch ? "bg-[#FFE7B7]/20" : "hover:bg-slate-50"}
                       >
-                        <td className="py-2.5 px-3 font-semibold text-slate-300">{f.field_name}</td>
-                        <td className="py-2.5 px-3 font-mono text-slate-200">{f.si_value}</td>
-                        <td className="py-2.5 px-3 font-mono">
+                        <td className="py-2 px-3 font-semibold text-slate-700">{f.field_name}</td>
+                        <td className="py-2 px-3 font-mono text-slate-600">{f.si_value}</td>
+                        <td className="py-2 px-3 font-mono">
                           <span
                             className={
                               f.is_missing
-                                ? "text-rose-400 font-semibold px-2 py-0.5 rounded bg-rose-950/40 border border-rose-800/40"
+                                ? "text-[#F6983E] font-semibold px-1.5 py-0.5 rounded bg-[#FFE7B7]/50 border border-[#FDD58D]"
                                 : f.is_mismatch
-                                ? "text-amber-300 font-semibold"
-                                : "text-slate-200"
+                                ? "text-[#F6983E] font-semibold"
+                                : "text-slate-700"
                             }
                           >
                             {f.bl_value}
                           </span>
                         </td>
-                        <td className="py-2.5 px-3">
+                        <td className="py-2 px-3">
                           {f.is_mismatch ? (
-                            <span className="text-amber-300 text-[11px] font-medium flex items-center gap-1">
-                              <span>⚠️</span>
-                              <span>Discrepancy</span>
+                            <span className="text-[#F6983E] text-[11px] font-semibold">
+                              Discrepancy
                             </span>
                           ) : (
-                            <span className="text-emerald-400 text-[11px] font-medium">✓ Match</span>
+                            <span className="text-[#6F8AB7] text-[11px] font-medium">Match</span>
                           )}
                         </td>
                       </tr>
@@ -987,36 +952,32 @@ export default function ReviewQueuePage() {
               </div>
             </div>
 
-            {/* Resolution Form / Reason-Specific Workflow */}
+            {/* Resolution Details or Form */}
             {selectedItem.resolved ? (
-              <div className="bg-slate-950 border border-emerald-800/50 p-4 rounded-xl text-xs space-y-3">
-                <div className="flex items-center justify-between text-emerald-400 font-semibold border-b border-slate-800 pb-2">
-                  <span className="flex items-center gap-2">
-                    <span className="w-2 h-2 rounded-full bg-emerald-400"></span>
-                    Resolved Status: {selectedItem.resolutionOutcome}
-                  </span>
-                  <span className="text-slate-400 font-mono text-[11px]">
+              <div className="bg-slate-50 border border-slate-200 p-4 rounded text-xs space-y-2">
+                <div className="flex items-center justify-between text-[#485C8B] font-semibold border-b border-slate-200 pb-2">
+                  <span>Resolved Status: {selectedItem.resolutionOutcome}</span>
+                  <span className="text-slate-500 font-mono text-[11px]">
                     Resolved at: {selectedItem.resolvedAt}
                   </span>
                 </div>
 
-                <p className="text-slate-300">
-                  <strong className="text-slate-400">Reviewer Note:</strong>{" "}
-                  {selectedItem.resolutionNotes}
+                <p className="text-slate-700">
+                  <strong className="text-slate-600">Reviewer Note:</strong> {selectedItem.resolutionNotes}
                 </p>
 
                 {selectedItem.correctionsHistory && selectedItem.correctionsHistory.length > 0 && (
-                  <div className="mt-3 bg-slate-900 p-3 rounded-lg border border-slate-800 space-y-2">
-                    <span className="font-semibold text-slate-200 block text-[11px] uppercase tracking-wider">
-                      🛠️ Human Verified Corrections Applied:
+                  <div className="mt-2 bg-white p-3 rounded border border-slate-200 space-y-2">
+                    <span className="font-semibold text-[#485C8B] block text-[11px] uppercase tracking-wider">
+                      Human Verified Corrections Applied:
                     </span>
-                    <div className="space-y-1.5 divide-y divide-slate-800">
+                    <div className="space-y-1.5 divide-y divide-slate-100">
                       {selectedItem.correctionsHistory.map((c, i) => (
                         <div key={i} className="pt-1.5 first:pt-0 grid grid-cols-4 gap-2 text-[11px]">
-                          <span className="font-medium text-slate-300">{c.field_name}</span>
-                          <span className="text-slate-400">SI: {c.si_value}</span>
-                          <span className="text-rose-400 line-through">BL: {c.original_bl_value}</span>
-                          <span className="text-emerald-400 font-semibold font-mono">
+                          <span className="font-medium text-slate-700">{c.field_name}</span>
+                          <span className="text-slate-500">SI: {c.si_value}</span>
+                          <span className="text-slate-400 line-through">BL: {c.original_bl_value}</span>
+                          <span className="text-[#485C8B] font-semibold font-mono">
                             Verified: {c.corrected_bl_value}
                           </span>
                         </div>
@@ -1026,61 +987,61 @@ export default function ReviewQueuePage() {
                 )}
               </div>
             ) : (
-              <form onSubmit={handleResolveSubmit} className="flex flex-col gap-4 text-xs">
+              <form onSubmit={handleResolveSubmit} className="flex flex-col gap-3.5 text-xs">
                 {/* 1. MISSING ATTACHMENT FLOW */}
                 {selectedItem.review_reason === "missing_attachment" && (
-                  <div className="bg-slate-950 p-4 rounded-xl border border-amber-800/40 space-y-3">
-                    <div className="flex items-center justify-between border-b border-slate-800 pb-2">
-                      <span className="font-semibold text-amber-300 flex items-center gap-1.5">
-                        <span>⚠️</span> Document Checklist (Missing Attachment)
+                  <div className="bg-slate-50 p-3.5 rounded border border-slate-200 space-y-3">
+                    <div className="flex items-center justify-between border-b border-slate-200 pb-2">
+                      <span className="font-semibold text-[#F6983E]">
+                        Document Checklist (Missing Attachment)
                       </span>
-                      <span className="text-slate-400 text-[11px]">Do NOT create fake BL values</span>
+                      <span className="text-slate-500 text-[11px]">Do NOT create placeholder BL values</span>
                     </div>
 
-                    <div className="grid grid-cols-2 gap-3 text-xs">
-                      <div className="p-2.5 rounded-lg bg-emerald-950/30 border border-emerald-800/40 text-emerald-300 font-medium">
+                    <div className="grid grid-cols-2 gap-2 text-xs">
+                      <div className="p-2.5 rounded bg-white border border-slate-200 text-slate-700 font-medium">
                         ✓ Shipping Instruction (SI): Present ({selectedItem.evidence.doc_si_name})
                       </div>
-                      <div className="p-2.5 rounded-lg bg-rose-950/30 border border-rose-800/40 text-rose-300 font-medium">
+                      <div className="p-2.5 rounded bg-[#FFE7B7]/40 border border-[#FDD58D] text-[#F6983E] font-medium">
                         ✗ Draft Bill of Lading (BL): MISSING
                       </div>
                     </div>
 
                     <div>
-                      <label className="block font-semibold text-slate-300 mb-2">Select Resolution Action:</label>
-                      <div className="grid grid-cols-3 gap-3">
+                      <label className="block font-semibold text-[#485C8B] mb-1.5">Select Resolution Action:</label>
+                      <div className="grid grid-cols-3 gap-2">
                         <button
                           type="button"
                           onClick={() => setActionChoice("CONFIRM_MISSING")}
-                          className={`p-2.5 rounded-xl border font-semibold transition-all ${
+                          className={`p-2 rounded border font-medium text-xs transition-colors ${
                             actionChoice === "CONFIRM_MISSING"
-                              ? "bg-amber-600 text-white border-amber-500 shadow-md"
-                              : "bg-slate-900 border-slate-800 text-slate-400"
+                              ? "bg-[#485C8B] text-white border-[#485C8B]"
+                              : "bg-white border-slate-200 text-slate-700 hover:border-slate-300"
                           }`}
                         >
-                          📩 Confirm BL Missing & Request Sender
+                          Confirm Missing & Request Sender
                         </button>
                         <button
                           type="button"
                           onClick={() => setActionChoice("RECEIVED_SEPARATELY")}
-                          className={`p-2.5 rounded-xl border font-semibold transition-all ${
+                          className={`p-2 rounded border font-medium text-xs transition-colors ${
                             actionChoice === "RECEIVED_SEPARATELY"
-                              ? "bg-indigo-600 text-white border-indigo-500 shadow-md"
-                              : "bg-slate-900 border-slate-800 text-slate-400"
+                              ? "bg-[#485C8B] text-white border-[#485C8B]"
+                              : "bg-white border-slate-200 text-slate-700 hover:border-slate-300"
                           }`}
                         >
-                          📄 BL Received Separately (Offline)
+                          BL Received Separately (Offline)
                         </button>
                         <button
                           type="button"
                           onClick={() => setActionChoice("DISMISS")}
-                          className={`p-2.5 rounded-xl border font-semibold transition-all ${
+                          className={`p-2 rounded border font-medium text-xs transition-colors ${
                             actionChoice === "DISMISS"
-                              ? "bg-slate-700 text-white border-slate-600 shadow-md"
-                              : "bg-slate-900 border-slate-800 text-slate-400"
+                              ? "bg-[#485C8B] text-white border-[#485C8B]"
+                              : "bg-white border-slate-200 text-slate-700 hover:border-slate-300"
                           }`}
                         >
-                          ✕ Dismiss Issue
+                          Dismiss Issue
                         </button>
                       </div>
                     </div>
@@ -1089,58 +1050,58 @@ export default function ReviewQueuePage() {
 
                 {/* 2. WRONG DOC TYPE FLOW */}
                 {selectedItem.review_reason === "wrong_doc_type" && (
-                  <div className="bg-slate-950 p-4 rounded-xl border border-purple-800/40 space-y-3">
-                    <div className="flex items-center justify-between border-b border-slate-800 pb-2">
-                      <span className="font-semibold text-purple-300 flex items-center gap-1.5">
-                        <span>📄</span> Document Mismatch Escalation
+                  <div className="bg-slate-50 p-3.5 rounded border border-slate-200 space-y-3">
+                    <div className="flex items-center justify-between border-b border-slate-200 pb-2">
+                      <span className="font-semibold text-[#F6983E]">
+                        Document Mismatch Escalation
                       </span>
-                      <span className="text-slate-400 text-[11px]">Commercial Invoice attached instead of BL</span>
+                      <span className="text-slate-500 text-[11px]">Commercial Invoice attached instead of BL</span>
                     </div>
 
-                    <div className="grid grid-cols-2 gap-3 text-xs">
-                      <div className="p-2.5 rounded-lg bg-slate-900 border border-slate-800 text-slate-300">
+                    <div className="grid grid-cols-2 gap-2 text-xs">
+                      <div className="p-2.5 rounded bg-white border border-slate-200 text-slate-700">
                         <strong>Expected:</strong> Draft Bill of Lading (BL)
                       </div>
-                      <div className="p-2.5 rounded-lg bg-purple-950/40 border border-purple-800/40 text-purple-300">
+                      <div className="p-2.5 rounded bg-[#FFE7B7]/40 border border-[#FDD58D] text-[#F6983E]">
                         <strong>Received:</strong> Commercial Invoice ({selectedItem.evidence.doc_bl_name})
                       </div>
                     </div>
 
                     <div>
-                      <label className="block font-semibold text-slate-300 mb-2">Select Resolution Action:</label>
-                      <div className="grid grid-cols-3 gap-3">
+                      <label className="block font-semibold text-[#485C8B] mb-1.5">Select Resolution Action:</label>
+                      <div className="grid grid-cols-3 gap-2">
                         <button
                           type="button"
                           onClick={() => setActionChoice("CONFIRM_WRONG_DOC")}
-                          className={`p-2.5 rounded-xl border font-semibold transition-all ${
+                          className={`p-2 rounded border font-medium text-xs transition-colors ${
                             actionChoice === "CONFIRM_WRONG_DOC"
-                              ? "bg-purple-600 text-white border-purple-500 shadow-md"
-                              : "bg-slate-900 border-slate-800 text-slate-400"
+                              ? "bg-[#485C8B] text-white border-[#485C8B]"
+                              : "bg-white border-slate-200 text-slate-700 hover:border-slate-300"
                           }`}
                         >
-                          🚫 Confirm Wrong Doc & Request BL
+                          Confirm Wrong Doc & Request BL
                         </button>
                         <button
                           type="button"
                           onClick={() => setActionChoice("REPLACEMENT_RECEIVED")}
-                          className={`p-2.5 rounded-xl border font-semibold transition-all ${
+                          className={`p-2 rounded border font-medium text-xs transition-colors ${
                             actionChoice === "REPLACEMENT_RECEIVED"
-                              ? "bg-indigo-600 text-white border-indigo-500 shadow-md"
-                              : "bg-slate-900 border-slate-800 text-slate-400"
+                              ? "bg-[#485C8B] text-white border-[#485C8B]"
+                              : "bg-white border-slate-200 text-slate-700 hover:border-slate-300"
                           }`}
                         >
-                          📄 Correct Document Received
+                          Correct Document Received
                         </button>
                         <button
                           type="button"
                           onClick={() => setActionChoice("DISMISS")}
-                          className={`p-2.5 rounded-xl border font-semibold transition-all ${
+                          className={`p-2 rounded border font-medium text-xs transition-colors ${
                             actionChoice === "DISMISS"
-                              ? "bg-slate-700 text-white border-slate-600 shadow-md"
-                              : "bg-slate-900 border-slate-800 text-slate-400"
+                              ? "bg-[#485C8B] text-white border-[#485C8B]"
+                              : "bg-white border-slate-200 text-slate-700 hover:border-slate-300"
                           }`}
                         >
-                          ✕ Dismiss Issue
+                          Dismiss Issue
                         </button>
                       </div>
                     </div>
@@ -1149,70 +1110,69 @@ export default function ReviewQueuePage() {
 
                 {/* 3. UNREADABLE FLOW */}
                 {selectedItem.review_reason === "unreadable" && (
-                  <div className="bg-slate-950 p-4 rounded-xl border border-rose-800/40 space-y-3">
-                    <div className="flex items-center justify-between border-b border-slate-800 pb-2">
-                      <span className="font-semibold text-rose-300 flex items-center gap-1.5">
-                        <span>🚫</span> Unreadable Scan Resolution
+                  <div className="bg-slate-50 p-3.5 rounded border border-slate-200 space-y-3">
+                    <div className="flex items-center justify-between border-b border-slate-200 pb-2">
+                      <span className="font-semibold text-[#F6983E]">
+                        Unreadable Scan Resolution
                       </span>
-                      <span className="text-slate-400 text-[11px]">Rasterized image PDF / 0 OCR text</span>
+                      <span className="text-slate-500 text-[11px]">Rasterized image PDF / 0 OCR text</span>
                     </div>
 
                     <div>
-                      <label className="block font-semibold text-slate-300 mb-2">Select Resolution Action:</label>
-                      <div className="grid grid-cols-3 gap-3">
+                      <label className="block font-semibold text-[#485C8B] mb-1.5">Select Resolution Action:</label>
+                      <div className="grid grid-cols-3 gap-2">
                         <button
                           type="button"
                           onClick={() => setActionChoice("CONFIRM_UNREADABLE")}
-                          className={`p-2.5 rounded-xl border font-semibold transition-all ${
+                          className={`p-2 rounded border font-medium text-xs transition-colors ${
                             actionChoice === "CONFIRM_UNREADABLE"
-                              ? "bg-rose-600 text-white border-rose-500 shadow-md"
-                              : "bg-slate-900 border-slate-800 text-slate-400"
+                              ? "bg-[#485C8B] text-white border-[#485C8B]"
+                              : "bg-white border-slate-200 text-slate-700 hover:border-slate-300"
                           }`}
                         >
-                          🔍 Confirm Unreadable & Request Rescan
+                          Confirm Unreadable & Request Rescan
                         </button>
                         <button
                           type="button"
                           onClick={() => setActionChoice("HUMAN_VERIFIED")}
-                          className={`p-2.5 rounded-xl border font-semibold transition-all ${
+                          className={`p-2 rounded border font-medium text-xs transition-colors ${
                             actionChoice === "HUMAN_VERIFIED"
-                              ? "bg-indigo-600 text-white border-indigo-500 shadow-md"
-                              : "bg-slate-900 border-slate-800 text-slate-400"
+                              ? "bg-[#485C8B] text-white border-[#485C8B]"
+                              : "bg-white border-slate-200 text-slate-700 hover:border-slate-300"
                           }`}
                         >
-                          ✍️ Human Verified Manual Entry
+                          Human Verified Manual Entry
                         </button>
                         <button
                           type="button"
                           onClick={() => setActionChoice("DISMISS")}
-                          className={`p-2.5 rounded-xl border font-semibold transition-all ${
+                          className={`p-2 rounded border font-medium text-xs transition-colors ${
                             actionChoice === "DISMISS"
-                              ? "bg-slate-700 text-white border-slate-600 shadow-md"
-                              : "bg-slate-900 border-slate-800 text-slate-400"
+                              ? "bg-[#485C8B] text-white border-[#485C8B]"
+                              : "bg-white border-slate-200 text-slate-700 hover:border-slate-300"
                           }`}
                         >
-                          ✕ Dismiss Issue
+                          Dismiss Issue
                         </button>
                       </div>
                     </div>
 
-                    {/* Show manual input only if HUMAN_VERIFIED chosen */}
                     {actionChoice === "HUMAN_VERIFIED" && (
-                      <div className="mt-3 p-3 rounded-xl bg-slate-900 border border-slate-800 space-y-2">
-                        <span className="font-semibold text-indigo-300 text-xs block">
-                          ✍️ Enter Human Verified Values (Marked as Verified):
+                      <div className="mt-2 p-3 rounded bg-white border border-slate-200 space-y-2">
+                        <span className="font-semibold text-[#485C8B] text-xs block">
+                          Enter Human Verified Values:
                         </span>
                         <div className="space-y-2">
                           {selectedItem.evidence.fields.map((f, i) => (
                             <div key={i} className="grid grid-cols-3 gap-2 items-center text-xs">
-                              <span className="text-slate-300 font-medium">{f.field_name}</span>
+                              <span className="text-slate-700 font-medium">{f.field_name}</span>
                               <span className="text-slate-500 font-mono text-[11px]">SI: {f.si_value}</span>
                               <input
                                 type="text"
                                 value={correctionsInput[f.field_name] || ""}
                                 onChange={(e) => handleCorrectionChange(f.field_name, e.target.value)}
                                 placeholder={`Verified ${f.field_name}...`}
-                                className="px-3 py-1 rounded bg-slate-950 border border-slate-800 text-emerald-300 font-mono text-xs focus:outline-none focus:border-indigo-500"
+                                className="px-2.5 py-1 rounded bg-white border border-slate-200 text-slate-800 font-mono text-xs focus:outline-none focus:border-[#485C8B]"
                               />
                             </div>
                           ))}
@@ -1224,29 +1184,29 @@ export default function ReviewQueuePage() {
 
                 {/* 4. MISSING VALUE FLOW */}
                 {selectedItem.review_reason === "missing_value" && (
-                  <div className="bg-slate-950 p-4 rounded-xl border border-cyan-800/40 space-y-3">
-                    <div className="flex items-center justify-between border-b border-slate-800 pb-2">
-                      <span className="font-semibold text-cyan-300 flex items-center gap-1.5">
-                        <span>❓</span> Field Correction Form (Blank / Placeholder Tokens)
+                  <div className="bg-slate-50 p-3.5 rounded border border-slate-200 space-y-3">
+                    <div className="flex items-center justify-between border-b border-slate-200 pb-2">
+                      <span className="font-semibold text-[#F6983E]">
+                        Field Correction Form (Blank / Placeholder Tokens)
                       </span>
-                      <span className="text-slate-400 text-[11px]">SI values are read-only references</span>
+                      <span className="text-slate-500 text-[11px]">SI values are read-only references</span>
                     </div>
 
-                    <div className="space-y-3">
+                    <div className="space-y-2.5">
                       {selectedItem.evidence.fields.map((f, idx) => (
                         <div
                           key={idx}
-                          className="grid grid-cols-1 sm:grid-cols-4 gap-2 items-center bg-slate-900 p-2.5 rounded-lg border border-slate-800"
+                          className="grid grid-cols-1 sm:grid-cols-4 gap-2 items-center bg-white p-2.5 rounded border border-slate-200"
                         >
                           <div className="sm:col-span-1">
-                            <span className="font-semibold text-slate-300 block">{f.field_name}</span>
+                            <span className="font-semibold text-slate-700 block">{f.field_name}</span>
                             <span className="text-[10px] text-slate-500">
-                              SI Ref: <strong className="text-slate-300 font-mono">{f.si_value}</strong>
+                              SI Ref: <strong className="text-slate-700 font-mono">{f.si_value}</strong>
                             </span>
                           </div>
 
-                          <div className="text-[11px] text-slate-400 sm:col-span-1">
-                            Orig BL: <span className="text-rose-400 font-mono">{f.bl_value}</span>
+                          <div className="text-[11px] text-slate-500 sm:col-span-1">
+                            Orig BL: <span className="text-[#F6983E] font-mono font-semibold">{f.bl_value}</span>
                           </div>
 
                           <div className="sm:col-span-2">
@@ -1255,7 +1215,7 @@ export default function ReviewQueuePage() {
                               value={correctionsInput[f.field_name] || ""}
                               onChange={(e) => handleCorrectionChange(f.field_name, e.target.value)}
                               placeholder={`Corrected BL ${f.field_name}...`}
-                              className="w-full px-3 py-1.5 rounded-lg bg-slate-950 border border-slate-800 text-emerald-300 font-mono text-xs focus:outline-none focus:border-emerald-500"
+                              className="w-full px-2.5 py-1 rounded bg-white border border-slate-200 text-slate-800 font-mono text-xs focus:outline-none focus:border-[#485C8B]"
                             />
                           </div>
                         </div>
@@ -1265,29 +1225,29 @@ export default function ReviewQueuePage() {
                 )}
 
                 <div>
-                  <label className="block font-semibold text-slate-300 mb-1.5">Reviewer Note:</label>
+                  <label className="block font-semibold text-slate-700 mb-1">Reviewer Note:</label>
                   <input
                     type="text"
                     placeholder="Enter audit resolution notes..."
                     value={resolutionNotes}
                     onChange={(e) => setResolutionNotes(e.target.value)}
-                    className="w-full px-3.5 py-2.5 rounded-xl bg-slate-950 border border-slate-800 text-slate-200 placeholder-slate-500 focus:outline-none focus:border-indigo-500 transition-colors"
+                    className="w-full px-3 py-2 rounded bg-white border border-slate-200 text-slate-800 placeholder-slate-400 focus:outline-none focus:border-[#485C8B]"
                   />
                 </div>
 
-                <div className="flex items-center justify-end gap-3 pt-3 border-t border-slate-800">
+                <div className="flex items-center justify-end gap-2 pt-3 border-t border-slate-200">
                   <button
                     type="button"
                     onClick={() => setSelectedItem(null)}
-                    className="px-4 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 font-medium transition-colors"
+                    className="px-3.5 py-1.5 rounded border border-slate-200 bg-white hover:bg-slate-50 text-slate-600 font-medium text-xs transition-colors"
                   >
                     Cancel
                   </button>
                   <button
                     type="submit"
-                    className="px-5 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white font-semibold transition-all shadow-lg shadow-indigo-600/30 flex items-center gap-2"
+                    className="px-4 py-1.5 rounded bg-[#485C8B] hover:bg-[#3b4c73] text-white font-semibold text-xs transition-colors shadow-none"
                   >
-                    <span>Save Resolution</span>
+                    Save Resolution
                   </button>
                 </div>
               </form>
