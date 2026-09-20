@@ -54,6 +54,7 @@ for field, labels in FIELD_LABELS.items():
 
 CANONICAL_FIELDS = list(FIELD_LABELS.keys())
 
+_ai_label_cache: dict[str, Optional[str]] = {}
 
 class ExtractedFields(BaseModel):
     email_id: str
@@ -137,31 +138,35 @@ def parse_attachment(raw_bytes: bytes, filename: str) -> dict:
 # ---------------------------------------------------------------------------
 # Normalize: dictionary first, AI fallback for anything the dictionary misses.
 # ---------------------------------------------------------------------------
+
 async def ai_match_label(raw_label: str) -> Optional[str]:
+    cache_key = raw_label.strip().lower()
+    if cache_key in _ai_label_cache:
+        return _ai_label_cache[cache_key]
+
     prompt = f"""
-You are matching a shipping-document field label to a canonical field name.
-
-Canonical fields: {CANONICAL_FIELDS}
-
-Label to match: "{raw_label}"
-
-If this label clearly refers to one of the canonical fields (even if worded
-differently, e.g. "Load Port" means "port_of_loading"), return that field
-name exactly. If it does NOT match any of them (e.g. it's a vessel name,
-HS code, freight term, or booking number), return "none".
-
-Return ONLY the field name or "none" — no explanation, no punctuation.
-"""
+    You are matching a shipping-document field label to a canonical field name.
+    
+    Canonical fields: {CANONICAL_FIELDS}
+    
+    Label to match: "{raw_label}"
+    
+    If this label clearly refers to one of the canonical fields (even if worded
+    differently, e.g. "Load Port" means "port_of_loading"), return that field
+    name exactly. If it does NOT match any of them (e.g. it's a vessel name,
+    HS code, freight term, or booking number), return "none".
+    
+    Return ONLY the field name or "none" — no explanation, no punctuation.
+    """
     try:
-        response = gemini_client.models.generate_content(
-            model=GEMINI_MODEL,
-            contents=prompt,
-        )
+        response = gemini_client.models.generate_content(model=GEMINI_MODEL, contents=prompt)
         answer = response.text.strip().lower()
-        return answer if answer in CANONICAL_FIELDS else None
+        result = answer if answer in CANONICAL_FIELDS else None
     except Exception:
-        return None
+        result = None
 
+    _ai_label_cache[cache_key] = result
+    return result
 
 async def normalize_fields(raw_pairs: dict) -> tuple[dict, bool]:
     result = {}
