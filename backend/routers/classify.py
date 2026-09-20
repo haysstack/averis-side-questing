@@ -6,7 +6,6 @@ from typing import Optional
 from typing import Literal
 from google import genai
 from db import supabase           # still works — Python looks from where you run uvicorn (backend/), not from the file's own folder
-from ai import ask_gemini
 from data_source import get_email, get_attachment_text
 from pydantic import BaseModel
 from dotenv import load_dotenv
