@@ -1,6 +1,6 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from routers import classify, extract, compare, review
+from routers import classify, extract, compare, review, si_creation
 app = FastAPI()
 
 app.add_middleware(
@@ -14,6 +14,7 @@ app.include_router(classify.router)
 app.include_router(extract.router)
 app.include_router(compare.router)
 app.include_router(review.router)
+app.include_router(si_creation.router)
 
 @app.get("/health")
 def health():
