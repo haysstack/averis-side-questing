@@ -223,12 +223,13 @@ async def extract_one_document(http_client, att_path, doc_type, email_id):
 @router.post("/extract/{email_id}")
 async def extract_email(
     email_id: str,
-    force: bool = Query(    
+    force: bool = Query(
         default=False,
         description=(
-            "TEMPORARY, for standalone testing while Person A is still building. "
-            "If True, skip the Supabase category check and attempt extraction "
-            "on ANY email with >=2 attachments, regardless of classification."
+            "If True, skip the classification check and attempt extraction "
+            "on any email with >=2 attachments, regardless of category/status. "
+            "Kept as an escape hatch for debugging; leave False for real runs "
+            "now that classification is finished."
         ),
     ),
     dry_run: bool = Query(default=False, description="If True, return results without writing to Supabase."),
@@ -246,17 +247,27 @@ async def extract_email(
         if not force:
             existing = (
                 supabase.table("emails")
-                .select("category")
+                .select("category,status")
                 .eq("email_id", email_id)
                 .maybe_single()
                 .execute()
             )
-            category = existing.data["category"] if existing.data else None
+            row = existing.data or {}
+            category = row.get("category")
+            status = row.get("status")
+
+            if status != "CLASSIFIED":
+                return {
+                    "email_id": email_id,
+                    "skipped": True,
+                    "reason": f"not yet classified (status={status!r}) — "
+                              f"run /classify/{email_id} first, or pass ?force=true to test anyway",
+                }
             if category != "BL_COMPARISON":
                 return {
                     "email_id": email_id,
                     "skipped": True,
-                    "reason": f"category is '{category}', not BL_COMPARISON (pass ?force=true to test anyway)",
+                    "reason": f"category is '{category}', not BL_COMPARISON",
                 }
 
         if len(attachments) < 2:
@@ -293,23 +304,35 @@ async def extract_email(
 @router.post("/extract-batch")
 async def extract_batch(
     limit: int = Query(default=10, ge=1, le=100),
-    force: bool = Query(default=True),
+    force: bool = Query(default=False),   # ← default flipped now that A is done
     dry_run: bool = Query(default=False),
 ):
-    async with httpx.AsyncClient(timeout=30) as http_client:
-        resp = await http_client.get(f"{DOCKER_INBOX_URL}/emails")
-        resp.raise_for_status()
-        all_emails = resp.json()
-
-    candidates = [e for e in all_emails if len(e.get("attachments", [])) >= 2][:limit]
+    if force:
+        # debugging path — same as before, pull raw candidates from Docker
+        async with httpx.AsyncClient(timeout=30) as http_client:
+            resp = await http_client.get(f"{DOCKER_INBOX_URL}/emails")
+            resp.raise_for_status()
+            all_emails = resp.json()
+        candidates = [e["email_id"] for e in all_emails if len(e.get("attachments", [])) >= 2][:limit]
+    else:
+        # real path — pull only emails A has already classified as BL_COMPARISON
+        result = (
+            supabase.table("emails")
+            .select("email_id")
+            .eq("category", "BL_COMPARISON")
+            .eq("status", "CLASSIFIED")
+            .limit(limit)
+            .execute()
+        )
+        candidates = [row["email_id"] for row in (result.data or [])]
 
     processed, skipped, failed = [], [], []
-    for email in candidates:
+    for email_id in candidates:
         try:
-            result = await extract_email(email["email_id"], force=force, dry_run=dry_run)
+            result = await extract_email(email_id, force=force, dry_run=dry_run)
             (skipped if result.get("skipped") else processed).append(result)
         except HTTPException as error:
-            failed.append({"email_id": email["email_id"], "error": error.detail})
+            failed.append({"email_id": email_id, "error": error.detail})
 
     return {
         "requested": limit,
