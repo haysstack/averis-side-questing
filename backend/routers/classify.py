@@ -227,6 +227,9 @@ async def get_emails(
     category: Optional[str] = Query(default=None),
     priority: Optional[str] = Query(default=None),
     status: Optional[str] = Query(default=None),
+    search: Optional[str] = Query(default=None, max_length=200),
+    search_field: str = Query(default="all"),
+    attachments_only: bool = Query(default=False),
     limit: int = Query(default=20, ge=1, le=100),
     offset: int = Query(default=0, ge=0),
 ):
@@ -240,6 +243,47 @@ async def get_emails(
 
     if status:
         query = query.eq("status", status)
+
+    if attachments_only:
+        try:
+            async with httpx.AsyncClient(timeout=30) as http_client:
+                inbox_response = await http_client.get(f"{DOCKER_INBOX_URL}/emails")
+                inbox_response.raise_for_status()
+                attachment_ids = [
+                    email["email_id"]
+                    for email in inbox_response.json()
+                    if email.get("attachments")
+                ]
+        except httpx.HTTPError as error:
+            raise HTTPException(
+                status_code=503,
+                detail=f"Could not filter attachment emails: {error}",
+            )
+        query = query.in_("email_id", attachment_ids)
+
+    searchable_fields = {
+        "id": "email_id",
+        "sender": "from_addr",
+        "subject": "subject",
+        "content": "body",
+        "category": "category",
+        "priority": "priority",
+        "summary": "ai_summary",
+    }
+
+    if search:
+        term = search.replace("%", "\\%").replace(",", "\\,").replace(".", "\\.")
+        if search_field == "all":
+            query = query.or_(
+                f"email_id.ilike.%{term}%,from_addr.ilike.%{term}%,"
+                f"subject.ilike.%{term}%,body.ilike.%{term}%,"
+                f"category.ilike.%{term}%,priority.ilike.%{term}%,"
+                f"ai_summary.ilike.%{term}%"
+            )
+        elif search_field in searchable_fields:
+            query = query.ilike(searchable_fields[search_field], f"%{term}%")
+        else:
+            raise HTTPException(status_code=422, detail="Unsupported search field")
 
     result = query.range(offset, offset + limit - 1).execute()
 
@@ -259,7 +303,21 @@ async def get_email(email_id: str):
     if not result.data:
         raise HTTPException(status_code=404, detail="Email not found")
 
-    return result.data
+    # Attachment paths live in the supplied Docker inbox, not the emails table.
+    try:
+        async with httpx.AsyncClient(timeout=15) as http_client:
+            source_response = await http_client.get(
+                f"{DOCKER_INBOX_URL}/emails/{email_id}"
+            )
+            source_response.raise_for_status()
+            source_email = source_response.json()
+    except httpx.HTTPError as error:
+        raise HTTPException(
+            status_code=503,
+            detail=f"Could not fetch attachments from Docker inbox: {error}",
+        )
+
+    return {**result.data, "attachments": source_email.get("attachments", [])}
 
 
 @router.get("/classification/stats")
