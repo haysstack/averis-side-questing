@@ -10,3 +10,6 @@ def get_all_emails():
 
 def get_attachment_text(path):
     return requests.get(f"{DOCKER_BASE}/{path}").text
+
+def get_attachment_bytes(path):
+    return requests.get(f"{DOCKER_BASE}/{path}").content
