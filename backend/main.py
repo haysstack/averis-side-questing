@@ -9,6 +9,7 @@ app.add_middleware(
     "http://localhost:3000",
     "https://averis-side-questing.vercel.app",
     ],
+    allow_origin_regex=r"https://averis-side-questing(?:-[a-z0-9-]+)?\.vercel\.app",
     allow_methods=["*"],
     allow_headers=["*"],
 )
