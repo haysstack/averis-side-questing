@@ -107,6 +107,21 @@ export function buildSidebarSections(
 ): SidebarSection[] {
   const sections: SidebarSection[] = [
     {
+      title: "Workspaces",
+      items: [
+        {
+          href: routes.home,
+          label: "Human Review",
+          count: stats ? (stats.needs_review ?? stats.by_status.NEEDS_REVIEW ?? null) : null,
+        },
+        {
+          href: routes.siCreation(),
+          label: "SI Editor",
+        },
+      ],
+    },
+    {
+      title: "Email Inbox",
       items: EXTRACTION_VIEWS.map((view) => ({
         href: routes.extraction(view.slug || undefined),
         label: view.label,

@@ -7,9 +7,9 @@ import { routes } from "@/lib/routes";
 import type { SidebarSection } from "../types";
 
 function isActive(pathname: string, href: string): boolean {
-  // "All" lives at /extraction, which is a prefix of every other view,
-  // so it must match exactly.
-  if (href === routes.extraction()) return pathname === href;
+  if (href === routes.home || href === routes.extraction() || href === routes.dashboard) {
+    return pathname === href;
+  }
   return pathname === href || pathname.startsWith(`${href}/`);
 }
 
@@ -30,9 +30,22 @@ export default function ExtractionSidebar({ sections }: { sections: SidebarSecti
 
   return (
     <aside className="border-b border-gray-200 bg-white md:sticky md:top-0 md:h-screen md:w-64 md:min-w-64 md:max-w-64 md:shrink-0 md:overflow-y-auto no-scrollbar [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden md:border-r md:border-b-0">
-      <div className="px-5 pt-5 pb-3 md:pt-8">
-        <h1 className="text-lg font-semibold text-navy">Extraction</h1>
-        <p className="text-sm text-gray-500">Emails pulled from the inbox</p>
+      <div className="px-5 pt-5 pb-4 md:pt-7">
+        <Link
+          href={routes.dashboard}
+          className="group flex items-center gap-3 rounded-lg p-1 -m-1 transition-colors hover:bg-gray-50 focus-visible:outline-2 focus-visible:outline-navy"
+          title="Go to Operations Dashboard"
+        >
+          <div className="flex size-9 items-center justify-center rounded-lg bg-navy text-sm font-bold text-white shadow-xs group-hover:bg-navy/90 transition-colors">
+            VA
+          </div>
+          <div>
+            <h1 className="text-base font-bold text-navy leading-tight group-hover:text-tangerine transition-colors">
+              Voyara
+            </h1>
+            <p className="text-xs text-gray-500">Shipping Operations</p>
+          </div>
+        </Link>
       </div>
 
       <nav aria-label="Extraction views" className="px-3 pb-3 md:pb-6">
@@ -42,22 +55,22 @@ export default function ExtractionSidebar({ sections }: { sections: SidebarSecti
           );
 
           return (
-            <div key={section.title ?? index} className={index > 0 ? "md:mt-5" : undefined}>
+            <div key={section.title ?? index} className={index > 0 ? "pt-5" : undefined}>
               {section.title && isSendersSection ? (
                 <button
                   type="button"
                   onClick={() => setSendersOpen((prev) => !prev)}
                   aria-expanded={sendersOpen}
-                  className="flex w-full items-center justify-between rounded-md px-3 py-1.5 text-sm font-medium text-gray-600 hover:bg-gray-100 hover:text-gray-900 transition-colors focus-visible:outline-2 focus-visible:outline-navy"
+                  className="flex w-full items-center justify-between rounded-md px-3 py-1.5 text-xs font-bold uppercase tracking-wider text-steel hover:bg-gray-100 hover:text-navy transition-colors focus-visible:outline-2 focus-visible:outline-navy"
                 >
                   <span className="flex items-center gap-1.5 min-w-0">
                     <span className="truncate">{section.title}</span>
-                    <span className="rounded-full bg-gray-100 px-1.5 py-0.5 text-[11px] font-normal text-gray-500 shrink-0">
+                    <span className="rounded-full bg-gray-100 px-1.5 py-0.5 text-[10px] font-normal normal-case tracking-normal text-gray-500 shrink-0">
                       {section.items.length}
                     </span>
                   </span>
                   <svg
-                    className={`size-4 text-gray-400 transition-transform duration-200 shrink-0 ${
+                    className={`size-3.5 text-gray-400 transition-transform duration-200 shrink-0 ${
                       sendersOpen ? "rotate-180 text-gray-600" : ""
                     }`}
                     fill="none"
@@ -70,7 +83,7 @@ export default function ExtractionSidebar({ sections }: { sections: SidebarSecti
                   </svg>
                 </button>
               ) : section.title ? (
-                <p className="px-3 pb-1 text-sm font-medium text-gray-500">{section.title}</p>
+                <p className="px-3 pb-1 text-xs font-bold uppercase tracking-wider text-steel">{section.title}</p>
               ) : null}
 
               {(!isSendersSection || sendersOpen) && (

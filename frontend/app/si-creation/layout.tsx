@@ -6,7 +6,7 @@ import ExtractionSidebar from "@/features/extraction/components/ExtractionSideba
 import { buildSidebarSections } from "@/features/extraction/config/views";
 
 export const metadata: Metadata = {
-  title: "SI Creation — Shipping Documentation",
+  title: "Voyara — SI Creation",
 };
 
 export default async function SICreationLayout({ children }: { children: ReactNode }) {
