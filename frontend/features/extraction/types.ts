@@ -52,5 +52,29 @@ export interface SidebarSection {
 
 /** What the /api/analyse route returns for one email. */
 export type AnalyseResult =
-  | { ok: true; extraction: "extracted" | "skipped" | "not_needed"; message: string }
+  | { ok: true; extraction: "extracted" | "skipped" | "not_needed" | "pending"; message: string }
   | { ok: false; message: string };
+
+/** Backend sort options for GET /emails. */
+export type SortKey = "priority" | "subject";
+
+export type SearchField =
+  | "all"
+  | "id"
+  | "sender"
+  | "subject"
+  | "content"
+  | "category"
+  | "priority"
+  | "summary";
+
+/** Everything the URL controls: page, sort, open email, search and the extra filters. */
+export interface ListQuery {
+  page: number;
+  sort?: SortKey;
+  email?: string;
+  q?: string;
+  field: SearchField;
+  priority?: EmailPriority;
+  attachments: boolean;
+}

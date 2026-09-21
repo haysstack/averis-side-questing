@@ -11,15 +11,19 @@ interface EmailListProps {
   /** Link for opening an email (or closing the panel when called with no id). */
   hrefFor: (emailId?: string) => string;
   selectedId?: string;
+  /** True when a search or filter is active (changes the empty message). */
+  filtered?: boolean;
 }
 
-export default function EmailList({ emails, extractions, hrefFor, selectedId }: EmailListProps) {
+export default function EmailList({ emails, extractions, hrefFor, selectedId, filtered }: EmailListProps) {
   if (emails.length === 0) {
     return (
       <div className="rounded-lg border border-dashed border-gray-300 bg-white px-6 py-14 text-center">
-        <p className="font-medium text-gray-900">No emails in this view</p>
+        <p className="font-medium text-gray-900">{filtered ? "No emails match your search or filters" : "No emails in this view"}</p>
         <p className="mt-1 text-sm text-gray-500">
-          Emails show up here after they are imported and classified.
+          {filtered
+            ? "Try a different search or clear the filters."
+            : "Emails show up here after they are imported and classified."}
         </p>
       </div>
     );

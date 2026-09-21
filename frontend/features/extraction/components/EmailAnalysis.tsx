@@ -2,6 +2,7 @@ import { describeMissingExtraction, type AnalysisState } from "../analysis";
 import type { EmailExtraction } from "../extractionTypes";
 import type { Email } from "../types";
 import AnalysisStrip from "./AnalysisStrip";
+import CreateSiLink from "./CreateSiLink";
 import ExtractionPanel from "./ExtractionPanel";
 
 interface EmailAnalysisProps {
@@ -35,6 +36,11 @@ export default function EmailAnalysis({ email, state, extraction }: EmailAnalysi
       return extraction ? <ExtractionPanel extraction={extraction} /> : null;
 
     default:
-      return null;
+      return email.category === "SI_REQUEST" ? (
+        <div className="flex flex-wrap items-center justify-between gap-3 border-t border-gray-100 bg-gray-50 px-6 py-2.5">
+          <p className="text-sm text-gray-600">Shipping instruction request.</p>
+          <CreateSiLink emailId={email.email_id} />
+        </div>
+      ) : null;
   }
 }

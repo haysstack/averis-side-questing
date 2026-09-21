@@ -1,11 +1,22 @@
 import Link from "next/link";
 import { cleanReason } from "../analysis";
 import type { Email } from "../types";
+import AttachmentList from "./AttachmentList";
 import CategoryBadge from "./CategoryBadge";
+import CreateSiLink from "./CreateSiLink";
 import PriorityBadge from "./PriorityBadge";
 
 /** Right-hand panel with the full email. Closing = following a link without ?email=. */
-export default function EmailDetailPanel({ email, closeHref }: { email: Email; closeHref: string }) {
+export default function EmailDetailPanel({
+  email,
+  closeHref,
+  attachments,
+}: {
+  email: Email;
+  closeHref: string;
+  /** null means the list could not be loaded. */
+  attachments: string[] | null;
+}) {
   return (
     <aside
       aria-label="Email details"
@@ -46,12 +57,29 @@ export default function EmailDetailPanel({ email, closeHref }: { email: Email; c
           </p>
         )}
         <div>
+          <p className="text-sm font-medium text-gray-700">Attachments</p>
+          <div className="mt-1.5">
+            {attachments === null ? (
+              <p className="text-sm text-gray-500">Attachments could not be loaded.</p>
+            ) : attachments.length === 0 ? (
+              <p className="text-sm text-gray-500">No attachments.</p>
+            ) : (
+              <AttachmentList paths={attachments} />
+            )}
+          </div>
+        </div>
+        <div>
           <p className="text-sm font-medium text-gray-700">Original email</p>
           <p className="mt-1 text-sm leading-6 break-words whitespace-pre-wrap text-gray-900">
             {email.body || "(Empty)"}
           </p>
         </div>
       </div>
+      {email.category === "SI_REQUEST" && (
+        <footer className="border-t border-gray-200 px-5 py-3">
+          <CreateSiLink emailId={email.email_id} />
+        </footer>
+      )}
     </aside>
   );
 }

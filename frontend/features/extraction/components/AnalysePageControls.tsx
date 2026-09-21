@@ -9,6 +9,8 @@ const AUTO_KEY = "extraction:auto-analyse";
 const DEFAULT_AUTO = true;
 /** Emails analysed at the same time. Keep low: each one can call Gemini. */
 const CONCURRENCY = 2;
+/** Rows update on screen at most this often while a batch runs (ms). */
+const REFRESH_MS = 1500;
 
 interface Progress {
   done: number;
@@ -34,6 +36,8 @@ export default function AnalysePageControls({ pendingIds, pageCount }: AnalysePa
   const [failures, setFailures] = useState<Failure[]>([]);
   const attempted = useRef<Set<string>>(new Set());
   const running = useRef(false);
+  const lastRefresh = useRef(0);
+  const timer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const idsKey = pendingIds.join(",");
   const ids = useMemo(() => (idsKey ? idsKey.split(",") : []), [idsKey]);
@@ -56,6 +60,21 @@ export default function AnalysePageControls({ pendingIds, pageCount }: AnalysePa
       setFailures([]);
       setProgress({ done: 0, total: toAnalyse.length });
 
+      // Refresh the list as emails finish, without hammering the server.
+      const refreshSoon = () => {
+        const wait = REFRESH_MS - (Date.now() - lastRefresh.current);
+        if (wait <= 0) {
+          lastRefresh.current = Date.now();
+          router.refresh();
+        } else if (!timer.current) {
+          timer.current = setTimeout(() => {
+            timer.current = null;
+            lastRefresh.current = Date.now();
+            router.refresh();
+          }, wait);
+        }
+      };
+
       const queue = [...toAnalyse];
       const failed: Failure[] = [];
       let done = 0;
@@ -64,7 +83,13 @@ export default function AnalysePageControls({ pendingIds, pageCount }: AnalysePa
         while (queue.length > 0) {
           const emailId = queue.shift();
           if (!emailId) return;
-          const result = await requestAnalysis(emailId);
+          // Classify first so the label shows up right away, then extract if needed.
+          let result = await requestAnalysis(emailId, "classify");
+          refreshSoon();
+          if (result.ok && result.extraction === "pending") {
+            result = await requestAnalysis(emailId, "extract");
+            refreshSoon();
+          }
           if (!result.ok || result.extraction === "skipped") {
             failed.push({ emailId, message: result.message });
           }
@@ -77,6 +102,10 @@ export default function AnalysePageControls({ pendingIds, pageCount }: AnalysePa
         Array.from({ length: Math.min(CONCURRENCY, toAnalyse.length) }, () => worker()),
       );
 
+      if (timer.current) {
+        clearTimeout(timer.current);
+        timer.current = null;
+      }
       running.current = false;
       setFailures(failed);
       setProgress(null);

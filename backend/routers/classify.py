@@ -227,6 +227,7 @@ async def get_emails(
     category: Optional[str] = Query(default=None),
     priority: Optional[str] = Query(default=None),
     status: Optional[str] = Query(default=None),
+    sort: Optional[str] = Query(default=None),  # "priority" or "subject"
     search: Optional[str] = Query(default=None, max_length=200),
     search_field: str = Query(default="all"),
     attachments_only: bool = Query(default=False),
@@ -284,6 +285,15 @@ async def get_emails(
             query = query.ilike(searchable_fields[search_field], f"%{term}%")
         else:
             raise HTTPException(status_code=422, detail="Unsupported search field")
+
+    if sort in ("priority", "subject"):
+        rank = {"High": 0, "Medium": 1, "Low": 2}
+        rows = query.execute().data or []
+        rows.sort(key=lambda r: (
+            rank.get(r.get("priority"), 3) if sort == "priority" else 0,
+            (r.get("subject") or "").lower(),
+        ))
+        return rows[offset : offset + limit]
 
     result = query.range(offset, offset + limit - 1).execute()
 

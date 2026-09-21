@@ -11,6 +11,8 @@ export const routes = {
 
   // Teammates' pages. Agree on these paths with them.
   email: (emailId: string) => `/emails/${encodeURIComponent(emailId)}`,
+  // Teammate's SI creation page. Change the path here if it lives elsewhere.
+  siCreation: (emailId: string) => `/si-creation?email_id=${encodeURIComponent(emailId)}`,
   // comparison: (emailId: string) => `/comparison/${encodeURIComponent(emailId)}`,
   // review: (emailId: string) => `/review/${encodeURIComponent(emailId)}`,
 } as const;

@@ -48,6 +48,14 @@ export const EXTRACTION_VIEWS: ExtractionViewConfig[] = [
     count: (s) => s.by_category.BL_COMPARISON ?? 0,
   },
   {
+    slug: "si-requests",
+    label: "SI Creation Requests",
+    title: "SI creation requests",
+    description: "Requests to create, amend or prepare a Shipping Instruction.",
+    filters: { category: "SI_REQUEST" },
+    count: (s) => s.by_category.SI_REQUEST ?? 0,
+  },
+  {
     // Needs the backend's needs_review filter (open rows in the `reviews` table).
     slug: "unreviewed",
     label: "Unreviewed",

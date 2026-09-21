@@ -2,6 +2,8 @@ import { ApiError, apiPost } from "@/lib/api-client";
 import { CATEGORY_META } from "../config/categories";
 import type { AnalyseResult, EmailCategory } from "../types";
 
+export type AnalyseStep = "all" | "classify" | "extract";
+
 interface ClassifyResponse {
   category: EmailCategory;
 }
@@ -16,28 +18,32 @@ function errorText(error: unknown): string {
 }
 
 /**
- * Runs the whole pipeline for one email:
- *  1. classify (returns the saved result instantly if already classified)
- *  2. if it is an SI/BL comparison, extract the fields from both documents
- * Safe to call again: nothing is repeated that has already been done, except extraction.
+ * Runs the pipeline for one email.
+ *  classify: classify only (instant if already classified)
+ *  extract:  extract SI/BL fields only (for SI/BL comparison emails)
+ *  all:      classify, then extract if it is an SI/BL comparison
  */
-export async function analyseEmail(emailId: string): Promise<AnalyseResult> {
+export async function analyseEmail(
+  emailId: string,
+  step: AnalyseStep = "all",
+): Promise<AnalyseResult> {
   const id = encodeURIComponent(emailId);
+  let category: EmailCategory = "BL_COMPARISON"; // the extract step only applies to comparisons
 
-  let category: EmailCategory;
-  try {
-    const classified = await apiPost<ClassifyResponse>(`/classify/${id}`);
-    category = classified.category;
-  } catch (error) {
-    return { ok: false, message: `Classification failed. ${errorText(error)}` };
-  }
+  if (step !== "extract") {
+    try {
+      category = (await apiPost<ClassifyResponse>(`/classify/${id}`)).category;
+    } catch (error) {
+      return { ok: false, message: `Classification failed. ${errorText(error)}` };
+    }
 
-  if (category !== "BL_COMPARISON") {
-    return {
-      ok: true,
-      extraction: "not_needed",
-      message: `Classified as ${CATEGORY_META[category].label}.`,
-    };
+    const label = `Classified as ${CATEGORY_META[category].label}.`;
+    if (category !== "BL_COMPARISON") {
+      return { ok: true, extraction: "not_needed", message: label };
+    }
+    if (step === "classify") {
+      return { ok: true, extraction: "pending", message: label };
+    }
   }
 
   try {

@@ -1,10 +1,14 @@
 import Link from "next/link";
+import type { ListQuery } from "../types";
+import { buildHref } from "../utils";
+import PageJump from "./PageJump";
 
 interface PaginationProps {
   basePath: string;
   page: number;
   totalPages: number | null;
   hasNext: boolean;
+  query: ListQuery;
 }
 
 const BUTTON =
@@ -12,29 +16,27 @@ const BUTTON =
 const DISABLED =
   "rounded-md border border-gray-200 bg-gray-50 px-3 py-1.5 text-sm font-medium text-gray-400";
 
-function pageHref(basePath: string, page: number): string {
-  return page <= 1 ? basePath : `${basePath}?page=${page}`;
-}
-
-export default function Pagination({ basePath, page, totalPages, hasNext }: PaginationProps) {
+export default function Pagination({ basePath, page, totalPages, hasNext, query }: PaginationProps) {
   if (page === 1 && !hasNext) return null;
 
   return (
-    <nav aria-label="Pagination" className="mt-4 flex items-center justify-between">
+    <nav aria-label="Pagination" className="mt-4 flex flex-wrap items-center justify-between gap-3">
       {page > 1 ? (
-        <Link href={pageHref(basePath, page - 1)} className={BUTTON}>
+        <Link href={buildHref(basePath, { ...query, page: page - 1, email: undefined })} className={BUTTON}>
           Previous
         </Link>
       ) : (
         <span className={DISABLED}>Previous</span>
       )}
 
-      <span className="text-sm text-gray-500">
-        {totalPages ? `Page ${page} of ${totalPages}` : `Page ${page}`}
-      </span>
+      {totalPages ? (
+        <PageJump key={page} basePath={basePath} page={page} totalPages={totalPages} query={query} />
+      ) : (
+        <span className="text-sm text-gray-500">Page {page}</span>
+      )}
 
       {hasNext ? (
-        <Link href={pageHref(basePath, page + 1)} className={BUTTON}>
+        <Link href={buildHref(basePath, { ...query, page: page + 1, email: undefined })} className={BUTTON}>
           Next
         </Link>
       ) : (
