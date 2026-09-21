@@ -101,7 +101,7 @@ Shipping operations teams get document check requests, new SI requests, invoice 
 
 ### AI / APIs
 
-- **Gemini** through `google-genai`. The model comes from `GEMINI_MODEL` (default `gemini-2.5-flash`).
+- **Gemini** through `google-genai`. The model comes from `GEMINI_MODEL`.
 
 | Used for | Input | Output |
 |----------|-------|--------|
