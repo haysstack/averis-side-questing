@@ -5,7 +5,7 @@ import { fetchSenders } from "@/features/extraction/api/senders";
 import ExtractionSidebar from "@/features/extraction/components/ExtractionSidebar";
 import { buildSidebarSections } from "@/features/extraction/config/views";
 
-export const metadata: Metadata = { title: "Extraction" };
+export const metadata: Metadata = { title: "Voyara — Extraction" };
 
 export default async function ExtractionLayout({ children }: { children: ReactNode }) {
   // If the backend is down the sidebar still renders, just without counts.
