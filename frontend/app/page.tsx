@@ -1,48 +1,6 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import Link from "next/link";
-import { routes } from "@/lib/routes";
-import { CATEGORY_META } from "@/features/extraction/config/categories";
-import type { EmailCategory } from "@/features/extraction/types";
-
-interface CategoryDirectoryItem {
-  category: EmailCategory;
-  slug: string;
-  description: string;
-}
-
-const CATEGORY_ITEMS: CategoryDirectoryItem[] = [
-  {
-    category: "BL_COMPARISON",
-    slug: "si-bl-comparisons",
-    description: "Verify draft BLs against Shipping Instructions.",
-  },
-  {
-    category: "SI_REQUEST",
-    slug: "si-requests",
-    description: "Customer booking instructions and SI drafting.",
-  },
-  {
-    category: "INVOICE_QUERY",
-    slug: "invoice-queries",
-    description: "Billing, freight charges, and invoice queries.",
-  },
-  {
-    category: "GENERAL",
-    slug: "general",
-    description: "Carrier updates, vessel schedules, and notices.",
-  },
-  {
-    category: "SPAM",
-    slug: "spam",
-    description: "Filtered unsolicited and non-operational mail.",
-  },
-];
-
-function count(map: Record<string, number> | undefined, key: string): number {
-  return map?.[key] ?? 0;
-}
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
 
@@ -364,8 +322,6 @@ export default function ReviewQueuePage() {
   const verifiedClean = stats?.by_status?.OK ?? 0;
   const inProcessing = (stats?.by_status?.CLASSIFIED ?? 0) + (stats?.by_status?.PENDING ?? 0);
   const needsReviewCount = unresolvedCount || (stats?.needs_review ?? 0);
-  const mismatchCount = stats ? count(stats.by_status, "MISMATCH") : 0;
-  const siCreationHref = routes.siCreation();
 
   const verifiedPercent = totalVolume ? ((verifiedClean / totalVolume) * 100).toFixed(1) : "0.0";
   const inProcessingPercent = totalVolume ? ((inProcessing / totalVolume) * 100).toFixed(1) : "0.0";
@@ -373,107 +329,7 @@ export default function ReviewQueuePage() {
   const operationalPercent = (100 - parseFloat(reviewPercent)).toFixed(1);
 
   return (
-    <div className="flex min-h-screen flex-col bg-gray-50 text-gray-900 md:flex-row">
-      {/* Left Sidebar Navigation */}
-      <aside className="border-b border-gray-200 bg-white md:sticky md:top-0 md:h-screen md:w-64 md:min-w-64 md:max-w-64 md:shrink-0 md:overflow-y-auto no-scrollbar md:border-r md:border-b-0 flex flex-col">
-        {/* Clickable Voyara Shipping Operations Header */}
-        <div className="px-5 pt-5 pb-4 md:pt-7">
-          <Link
-            href={routes.dashboard}
-            className="group flex items-center gap-3 rounded-lg p-1 -m-1 transition-colors hover:bg-gray-50 focus-visible:outline-2 focus-visible:outline-navy"
-            title="Go to Operations Dashboard"
-          >
-            <div className="flex size-9 items-center justify-center rounded-lg bg-navy text-sm font-bold text-white shadow-xs group-hover:bg-navy/90 transition-colors">
-              VA
-            </div>
-            <div>
-              <h1 className="text-base font-bold text-navy leading-tight group-hover:text-tangerine transition-colors">
-                Voyara
-              </h1>
-              <p className="text-xs text-gray-500">Shipping Operations</p>
-            </div>
-          </Link>
-        </div>
-
-        {/* Navigation Links */}
-        <nav aria-label="Main Navigation" className="px-3 pb-6 space-y-1 flex-1">
-          <p className="px-3 pb-1 text-xs font-bold uppercase tracking-wider text-steel">
-            Workspaces
-          </p>
-
-          <Link
-            href={routes.dashboard}
-            className="flex items-center justify-between gap-3 rounded-md px-3 py-2 text-sm font-medium text-gray-700 hover:bg-gray-100 hover:text-gray-900 transition-colors focus-visible:outline-2 focus-visible:outline-navy"
-          >
-            <span>Dashboard</span>
-          </Link>
-
-          <Link
-            href={routes.extraction()}
-            className="flex items-center justify-between gap-3 rounded-md px-3 py-2 text-sm font-medium text-gray-700 hover:bg-gray-100 hover:text-gray-900 transition-colors focus-visible:outline-2 focus-visible:outline-navy"
-          >
-            <span>Email Inbox</span>
-          </Link>
-
-          <Link
-            href={routes.home}
-            className="relative flex items-center justify-between gap-3 rounded-md px-3 py-2 text-sm font-semibold text-navy bg-cream focus-visible:outline-2 focus-visible:outline-navy"
-          >
-            <span
-              aria-hidden
-              className="absolute inset-y-1.5 left-0 hidden w-1 rounded-full bg-tangerine md:block"
-            />
-            <span>Human Review</span>
-            {needsReviewCount > 0 && (
-              <span className="rounded-full bg-tangerine px-2 py-0.5 text-xs font-semibold text-white">
-                {needsReviewCount}
-              </span>
-            )}
-          </Link>
-
-          <Link
-            href={siCreationHref}
-            className="flex items-center justify-between gap-3 rounded-md px-3 py-2 text-sm font-medium text-gray-700 hover:bg-gray-100 hover:text-gray-900 transition-colors focus-visible:outline-2 focus-visible:outline-navy"
-          >
-            <span>SI Editor</span>
-          </Link>
-
-          <Link
-            href={routes.extraction("bl-amendments")}
-            className="flex items-center justify-between gap-3 rounded-md px-3 py-2 text-sm font-medium text-gray-700 hover:bg-gray-100 hover:text-gray-900 transition-colors focus-visible:outline-2 focus-visible:outline-navy"
-          >
-            <span>BL Amendments</span>
-            {mismatchCount > 0 && (
-              <span className="rounded-full bg-tangerine px-2 py-0.5 text-xs font-semibold text-white">
-                {mismatchCount}
-              </span>
-            )}
-          </Link>
-
-          {/* Email Inbox Categories Section */}
-          <div className="pt-5">
-            <p className="px-3 pb-1 text-xs font-bold uppercase tracking-wider text-steel">
-              Email Inbox
-            </p>
-            {CATEGORY_ITEMS.map((item) => (
-              <Link
-                key={item.category}
-                href={routes.extraction(item.slug)}
-                className="flex items-center justify-between gap-2 rounded-md px-3 py-1.5 text-xs font-medium text-gray-600 hover:bg-gray-100 hover:text-gray-900 transition-colors"
-              >
-                <span className="truncate">{CATEGORY_META[item.category].label}</span>
-                {stats && (
-                  <span className="tabular-nums text-gray-400">
-                    {count(stats.by_category, item.category)}
-                  </span>
-                )}
-              </Link>
-            ))}
-          </div>
-        </nav>
-      </aside>
-
-      {/* Main Content Area */}
+    <>
       <div className="min-w-0 flex-1 flex flex-col">
         {/* Toast Notification */}
         {successToast && (
@@ -1298,6 +1154,6 @@ export default function ReviewQueuePage() {
           </div>
         </div>
       )}
-    </div>
+    </>
   );
 }

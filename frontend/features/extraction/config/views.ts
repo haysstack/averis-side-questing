@@ -110,6 +110,10 @@ export function buildSidebarSections(
       title: "Workspaces",
       items: [
         {
+          href: routes.dashboard,
+          label: "Dashboard",
+        },
+        {
           href: routes.home,
           label: "Human Review",
           count: stats ? (stats.needs_review ?? stats.by_status.NEEDS_REVIEW ?? null) : null,
