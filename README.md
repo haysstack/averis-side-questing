@@ -237,6 +237,34 @@ Docker inbox (JSON emails + attachments)
 - `confidence` is the share of the seven fields found, scaled by parse method, minus small penalties for AI label matching and warnings.
 - Rows are saved by deleting the email's old rows and inserting the SI and BL rows. `dry_run=true` returns results without saving.
 
+### SI / BL Comparison
+
+After the SI and BL documents have been extracted, Voyara compares the seven canonical fields:
+
+- Shipper
+- Consignee
+- Notify party
+- Port of loading
+- Port of discharge
+- Container count
+- Gross weight (kg)
+
+Text values are normalized before comparison by lowercasing, removing extra whitespace and punctuation. Numeric values are normalized so values such as formatted numbers can be compared consistently.
+
+Each field is recorded with its SI value, BL value and comparison result. The comparison distinguishes between:
+
+- **Match** — both values are present and equivalent.
+- **Mismatch** — both values are present but different.
+- **Missing value** — one or both documents do not contain a usable value.
+
+Voyara does not automatically assume a document is correct when the extraction is unreliable. If either document has low extraction confidence, the email is sent to the review queue as **NEEDS_REVIEW** with an `unreadable` reason. Missing SI or BL extractions are handled as `missing_attachment`, while incomplete field data is handled as `missing_value`.
+
+For complete and sufficiently reliable extractions, the comparison is stored in Supabase. The email is then marked as:
+
+- `OK` when all seven fields match.
+- `MISMATCH` when one or more fields differ.
+- `NEEDS_REVIEW` when the comparison cannot be completed reliably.
+
 ### Review and submission
 - `/review-queue` merges `reviews`, emails with status `NEEDS_REVIEW`, `extractions` and `comparisons`. For each item it builds the seven-field evidence and marks fields as mismatched or missing. Placeholder values such as `???`, `TBA`, `N/A` count as missing.
 - `/review/{email_id}/resolve` applies corrections to the BL extraction row, re-runs `compare_email`, marks the review resolved and sets the email status to `RESOLVED`.
