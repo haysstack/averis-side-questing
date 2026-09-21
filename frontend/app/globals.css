@@ -1,24 +1,27 @@
 @import "tailwindcss";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
-  --font-geist-sans: Arial, Helvetica, sans-serif;
-  --font-geist-mono: "Courier New", monospace;
+/* Brand palette. Gives you bg-cream, text-navy, border-tangerine, etc. */
+@theme {
+  --color-cream: #ffe7b7;
+  --color-honey: #fdd58d;
+  --color-tangerine: #f6983e;
+  --color-steel: #6f8ab7;
+  --color-navy: #485c8b;
+
+  --font-brand: "Plus Jakarta Sans Variable", ui-sans-serif, system-ui, sans-serif;
 }
 
+/* Keeps the fonts from create-next-app working for pages that use them. */
 @theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+/* Light mode only. */
+:root {
+  color-scheme: light;
+  --background: #ffffff;
+  --foreground: #111827;
 }
 
 body {
