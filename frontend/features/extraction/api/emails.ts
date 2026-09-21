@@ -11,6 +11,7 @@ export function fetchEmails(filters: EmailFilters, query: ListQuery): Promise<Em
     priority: query.priority ?? filters.priority,
     status: filters.status,
     needs_review: filters.needsReview ? "true" : undefined,
+    sender_domain: filters.senderDomain,
     search: query.q,
     search_field: query.q ? query.field : undefined,
     attachments_only: query.attachments ? "true" : undefined,

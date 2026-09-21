@@ -35,6 +35,7 @@ export interface EmailFilters {
   priority?: EmailPriority;
   status?: string;
   needsReview?: boolean;
+  senderDomain?: string;
 }
 
 export interface SidebarItem {
@@ -78,3 +79,18 @@ export interface ListQuery {
   priority?: EmailPriority;
   attachments: boolean;
 }
+
+export interface SenderSummary {
+  domain: string;
+  count: number;
+}
+
+export interface ReplyDraft {
+  to: string | null;
+  subject: string;
+  body: string;
+  source: "template" | "ai";
+  template: string | null;
+}
+
+export type ReplyResult = ({ ok: true } & ReplyDraft) | { ok: false; message: string };

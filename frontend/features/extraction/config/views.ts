@@ -1,5 +1,5 @@
 import { routes } from "@/lib/routes";
-import type { EmailFilters, EmailStats, SidebarSection } from "../types";
+import type { EmailFilters, EmailStats, SenderSummary, SidebarSection } from "../types";
 
 export interface ExtractionViewConfig {
   /** URL segment under /extraction. Empty string means "All". */
@@ -93,8 +93,11 @@ export function getViewBySlug(slug: string): ExtractionViewConfig | undefined {
  * To link a teammate's page, add another section or item here, e.g.
  *   { title: "Workflows", items: [{ href: routes.review, label: "Review queue" }] }
  */
-export function buildSidebarSections(stats: EmailStats | null): SidebarSection[] {
-  return [
+export function buildSidebarSections(
+  stats: EmailStats | null,
+  senders: SenderSummary[] = [],
+): SidebarSection[] {
+  const sections: SidebarSection[] = [
     {
       items: EXTRACTION_VIEWS.map((view) => ({
         href: routes.extraction(view.slug || undefined),
@@ -104,4 +107,29 @@ export function buildSidebarSections(stats: EmailStats | null): SidebarSection[]
       })),
     },
   ];
+
+  if (senders.length > 0) {
+    sections.push({
+      title: "Frequent senders",
+      items: senders.map((sender) => ({
+        href: routes.extraction(`senders/${sender.domain}`),
+        label: sender.domain,
+        count: sender.count,
+      })),
+    });
+  }
+
+  return sections;
+}
+
+/** A view for one sender domain. Not in EXTRACTION_VIEWS because it is built from live data. */
+export function senderView(sender: SenderSummary): ExtractionViewConfig {
+  return {
+    slug: `senders/${sender.domain}`,
+    label: sender.domain,
+    title: `Emails from ${sender.domain}`,
+    description: "Every email sent from this domain.",
+    filters: { senderDomain: sender.domain },
+    count: () => sender.count,
+  };
 }

@@ -5,6 +5,7 @@ import AttachmentList from "./AttachmentList";
 import CategoryBadge from "./CategoryBadge";
 import CreateSiLink from "./CreateSiLink";
 import PriorityBadge from "./PriorityBadge";
+import ReplyDrafter from "./ReplyDrafter";
 
 /** Right-hand panel with the full email. Closing = following a link without ?email=. */
 export default function EmailDetailPanel({
@@ -75,9 +76,10 @@ export default function EmailDetailPanel({
           </p>
         </div>
       </div>
-      {email.category === "SI_REQUEST" && (
-        <footer className="border-t border-gray-200 px-5 py-3">
-          <CreateSiLink emailId={email.email_id} />
+      {email.category && email.category !== "SPAM" && (
+        <footer className="flex flex-wrap items-center gap-2 border-t border-gray-200 px-5 py-3">
+          <ReplyDrafter key={email.email_id} emailId={email.email_id} />
+          {email.category === "SI_REQUEST" && <CreateSiLink emailId={email.email_id} />}
         </footer>
       )}
     </aside>
