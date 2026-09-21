@@ -1,0 +1,18 @@
+FROM python:3.12-slim
+
+WORKDIR /app
+
+COPY server/requirements.txt ./
+RUN pip install --no-cache-dir -r requirements.txt
+
+COPY server/scoring.py server/app.py server/score_cli.py ./
+
+# Copy only public dataset files.
+# Do NOT copy ground_truth.json.
+COPY data_v2/inbox /data/inbox
+COPY data_v2/attachments /data/attachments
+COPY data_v2/sample_submission.json /data/sample_submission.json
+
+ENV DATA_DIR=/data
+
+CMD sh -c "uvicorn app:app --host 0.0.0.0 --port ${PORT:-8000}"
