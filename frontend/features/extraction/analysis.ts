@@ -11,7 +11,7 @@ import type { Email } from "./types";
 export type AnalysisState = "unanalysed" | "extraction-missing" | "extracted" | "none";
 
 export function isClassified(email: Email): boolean {
-  return email.status === "CLASSIFIED" && email.category !== null;
+  return email.category !== null;
 }
 
 export function getAnalysisState(

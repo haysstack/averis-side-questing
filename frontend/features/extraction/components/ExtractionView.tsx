@@ -4,6 +4,7 @@ import { getAnalysisState, needsAutoAnalysis } from "../analysis";
 import { fetchEmails, fetchEmailStats, PAGE_SIZE } from "../api/emails";
 import { fetchAttachments } from "../api/attachments";
 import { fetchExtractions } from "../api/extractions";
+import { fetchComparisons } from "../api/comparisons";
 import type { ExtractionViewConfig } from "../config/views";
 import type { Email, ListQuery } from "../types";
 import { buildHref } from "../utils";
@@ -41,19 +42,18 @@ export default async function ExtractionView({
     fetchEmailStats().catch(() => null),
   ]);
 
-  // Only SI/BL comparison emails have extracted fields.
   const comparisonIds = emails
     .filter((email) => email.category === "BL_COMPARISON")
     .map((email) => email.email_id);
   const extractions = await fetchExtractions(comparisonIds).catch(() => null);
   const extractionsFailed = comparisonIds.length > 0 && extractions === null;
 
-  // Emails on this page that "Analyse all" and automatic analysis should pick up.
+  const comparisons = await fetchComparisons(comparisonIds).catch(() => null);
+
   const pendingIds = emails
     .filter((email) => needsAutoAnalysis(email, getAnalysisState(email, extractions)))
     .map((email) => email.email_id);
 
-  // The stats only count the whole view, so with a search or filter the total is unknown.
   const filtered = Boolean(query.q || query.priority || query.attachments);
   const total = !filtered && stats ? view.count(stats) : null;
   const totalPages = total !== null ? Math.max(1, Math.ceil(total / PAGE_SIZE)) : null;
@@ -98,6 +98,7 @@ export default async function ExtractionView({
             <EmailList
               emails={emails}
               extractions={extractions}
+              comparisons={comparisons}
               hrefFor={hrefFor}
               selectedId={selected?.email_id}
               filtered={filtered}

@@ -28,7 +28,7 @@ DOCKER_INBOX_URL = os.getenv(
     "http://localhost:8080"
 )
 GEMINI_API_KEY = os.getenv("GEMINI_API_KEY")
-GEMINI_MODEL = os.getenv("GEMINI_MODEL", "gemini-2.5-flash")
+GEMINI_MODEL = os.getenv("GEMINI_MODEL", "gemini-3.5-flash-lite")
 
 
 if not SUPABASE_URL or not SUPABASE_SERVICE_KEY:

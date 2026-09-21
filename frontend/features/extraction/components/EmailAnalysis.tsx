@@ -1,27 +1,23 @@
 import { describeMissingExtraction, type AnalysisState } from "../analysis";
 import type { EmailExtraction } from "../extractionTypes";
+import type { ComparisonRow } from "../comparisonTypes";
 import type { Email } from "../types";
 import AnalysisStrip from "./AnalysisStrip";
 import CreateSiLink from "./CreateSiLink";
 import ExtractionPanel from "./ExtractionPanel";
+import ComparisonPanel from "./ComparisonPanel";
 
 interface EmailAnalysisProps {
   email: Email;
   state: AnalysisState;
   extraction: EmailExtraction | null;
+  comparison: ComparisonRow | null;
 }
 
-/** The strip under each email row. Picks what to show from the email's pipeline state. */
-export default function EmailAnalysis({ email, state, extraction }: EmailAnalysisProps) {
+export default function EmailAnalysis({ email, state, extraction, comparison }: EmailAnalysisProps) {
   switch (state) {
     case "unanalysed":
-      return (
-        <AnalysisStrip
-          emailId={email.email_id}
-          message="Not analysed yet."
-          buttonLabel="Analyse"
-        />
-      );
+      return <AnalysisStrip emailId={email.email_id} message="Not analysed yet." buttonLabel="Analyse" />;
 
     case "extraction-missing":
       return (
@@ -33,7 +29,12 @@ export default function EmailAnalysis({ email, state, extraction }: EmailAnalysi
       );
 
     case "extracted":
-      return extraction ? <ExtractionPanel extraction={extraction} /> : null;
+      return extraction ? (
+        <>
+          <ExtractionPanel extraction={extraction} />
+          <ComparisonPanel emailId={email.email_id} extraction={extraction} comparison={comparison} />
+        </>
+      ) : null;
 
     default:
       return email.category === "SI_REQUEST" ? (
