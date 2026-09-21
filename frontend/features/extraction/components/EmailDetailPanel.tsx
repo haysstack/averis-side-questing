@@ -61,10 +61,10 @@ export default function EmailDetailPanel({
           <div className="rounded-lg border border-rose-200 bg-rose-50/80 p-3 text-rose-900">
             <p className="text-sm font-semibold flex items-center gap-1.5 text-rose-800">
               <span className="inline-block size-2 rounded-full bg-rose-600"></span>
-              Discrepancies Detected — Amendment Required
+              Amendment Required
             </p>
             <p className="mt-1 text-xs text-rose-700">
-              Discrepancies found between SI and draft B/L. Use Draft Reply below to request a correction from the carrier.
+              Discrepancies found between Shipping Instruction and draft Bill of Lading. Use Draft Reply below to request a correction from the carrier.
             </p>
           </div>
         )}
@@ -92,7 +92,7 @@ export default function EmailDetailPanel({
           <ReplyDrafter key={email.email_id} emailId={email.email_id} />
           {email.status === "MISMATCH" && (
             <span className="text-xs font-medium text-rose-700">
-              (B/L Amendment notice)
+              (BL amendment notice)
             </span>
           )}
           {email.category === "SI_REQUEST" && <CreateSiLink emailId={email.email_id} />}
