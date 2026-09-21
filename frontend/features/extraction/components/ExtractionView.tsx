@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { ApiError } from "@/lib/api-client";
 import { routes } from "@/lib/routes";
 import { getAnalysisState, needsAutoAnalysis } from "../analysis";
@@ -65,7 +66,7 @@ export default async function ExtractionView({
   const attachments = selected ? await fetchAttachments(selected.email_id).catch(() => null) : [];
 
   return (
-    <div className={selected ? "flex items-start gap-6" : "mx-auto max-w-4xl"}>
+    <div className={selected ? "flex items-start gap-6 max-w-7xl mx-auto" : "mx-auto max-w-6xl"}>
       <section className="min-w-0 flex-1">
         <FilterBar key={`${query.q ?? ""}|${query.field}`} basePath={basePath} query={query} />
 
@@ -76,6 +77,47 @@ export default async function ExtractionView({
             {total !== null && ` ${total} ${total === 1 ? "email" : "emails"} in this view.`}
           </p>
         </header>
+
+        {view.slug === "si-bl-comparisons" && (
+          <div className="mb-5 flex flex-wrap items-center gap-2 rounded-lg border border-gray-200 bg-white px-3.5 py-2.5 shadow-sm">
+            <span className="text-xs font-semibold uppercase tracking-wider text-gray-500 mr-1">
+              Outcome:
+            </span>
+            <Link
+              href={buildHref(basePath, { ...query, page: 1, status: undefined })}
+              scroll={false}
+              className={`rounded-full px-3 py-1 text-xs font-medium transition-colors ${
+                !query.status
+                  ? "bg-navy text-white shadow-sm"
+                  : "bg-gray-100 text-gray-700 hover:bg-gray-200"
+              }`}
+            >
+              All Comparisons
+            </Link>
+            <Link
+              href={buildHref(basePath, { ...query, page: 1, status: "MISMATCH" })}
+              scroll={false}
+              className={`rounded-full px-3 py-1 text-xs font-medium transition-colors ${
+                query.status === "MISMATCH"
+                  ? "bg-rose-700 text-white shadow-sm"
+                  : "bg-rose-50 text-rose-800 border border-rose-200 hover:bg-rose-100"
+              }`}
+            >
+              Action Required (Mismatch)
+            </Link>
+            <Link
+              href={buildHref(basePath, { ...query, page: 1, status: "OK" })}
+              scroll={false}
+              className={`rounded-full px-3 py-1 text-xs font-medium transition-colors ${
+                query.status === "OK"
+                  ? "bg-emerald-700 text-white shadow-sm"
+                  : "bg-emerald-50 text-emerald-800 border border-emerald-200 hover:bg-emerald-100"
+              }`}
+            >
+              Matched (OK)
+            </Link>
+          </div>
+        )}
 
         {error ? (
           <div role="alert" className="rounded-lg border border-tangerine bg-cream/50 px-5 py-4">
@@ -98,7 +140,8 @@ export default async function ExtractionView({
             <EmailList
               emails={emails}
               extractions={extractions}
-              hrefFor={hrefFor}
+              basePath={basePath}
+              query={query}
               selectedId={selected?.email_id}
               filtered={filtered}
             />

@@ -9,7 +9,7 @@ export function fetchEmails(filters: EmailFilters, query: ListQuery): Promise<Em
   return apiGet<Email[]>("/emails", {
     category: filters.category,
     priority: query.priority ?? filters.priority,
-    status: filters.status,
+    status: query.status ?? filters.status,
     needs_review: filters.needsReview ? "true" : undefined,
     sender_domain: filters.senderDomain,
     search: query.q,

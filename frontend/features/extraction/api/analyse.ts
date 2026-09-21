@@ -6,6 +6,8 @@ export type AnalyseStep = "all" | "classify" | "extract";
 
 interface ClassifyResponse {
   category: EmailCategory;
+  status?: string;
+  review_reason?: string;
 }
 
 interface ExtractResponse {
@@ -31,13 +33,22 @@ export async function analyseEmail(
   let category: EmailCategory = "BL_COMPARISON"; // the extract step only applies to comparisons
 
   if (step !== "extract") {
+    let classifyRes: ClassifyResponse;
     try {
-      category = (await apiPost<ClassifyResponse>(`/classify/${id}`)).category;
+      classifyRes = await apiPost<ClassifyResponse>(`/classify/${id}`);
+      category = classifyRes.category;
     } catch (error) {
       return { ok: false, message: `Classification failed. ${errorText(error)}` };
     }
 
     const label = `Classified as ${CATEGORY_META[category].label}.`;
+    if (classifyRes.status === "NEEDS_REVIEW") {
+      return {
+        ok: true,
+        extraction: "skipped",
+        message: `${label} Flagged for review: ${classifyRes.review_reason || "Escalated"}.`,
+      };
+    }
     if (category !== "BL_COMPARISON") {
       return { ok: true, extraction: "not_needed", message: label };
     }

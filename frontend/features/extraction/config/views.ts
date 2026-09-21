@@ -48,6 +48,14 @@ export const EXTRACTION_VIEWS: ExtractionViewConfig[] = [
     count: (s) => s.by_category.BL_COMPARISON ?? 0,
   },
   {
+    slug: "bl-amendments",
+    label: "BL Amendments",
+    title: "BL amendment requests",
+    description: "SI and BL comparisons with detected discrepancies requiring correction requests to the carrier.",
+    filters: { category: "BL_COMPARISON", status: "MISMATCH" },
+    count: (s) => s.by_status.MISMATCH ?? 0,
+  },
+  {
     slug: "si-requests",
     label: "SI Creation Requests",
     title: "SI creation requests",

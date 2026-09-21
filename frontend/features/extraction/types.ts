@@ -78,6 +78,7 @@ export interface ListQuery {
   field: SearchField;
   priority?: EmailPriority;
   attachments: boolean;
+  status?: string;
 }
 
 export interface SenderSummary {

@@ -11,7 +11,7 @@ import type { Email } from "./types";
 export type AnalysisState = "unanalysed" | "extraction-missing" | "extracted" | "none";
 
 export function isClassified(email: Email): boolean {
-  return email.status === "CLASSIFIED" && email.category !== null;
+  return Boolean(email.category) && email.status !== "PENDING" && email.status !== null;
 }
 
 export function getAnalysisState(
@@ -20,6 +20,7 @@ export function getAnalysisState(
 ): AnalysisState {
   if (!isClassified(email)) return "unanalysed";
   if (email.category !== "BL_COMPARISON" || extractions === null) return "none";
+  if (email.status === "NEEDS_REVIEW") return "none";
   return extractions[email.email_id] ? "extracted" : "extraction-missing";
 }
 
@@ -30,7 +31,7 @@ export function getAnalysisState(
  */
 export function needsAutoAnalysis(email: Email, state: AnalysisState): boolean {
   if (state === "unanalysed") return true;
-  return state === "extraction-missing" && !email.review_reason;
+  return state === "extraction-missing" && !email.review_reason && email.status !== "NEEDS_REVIEW";
 }
 
 /** Drops the "Extraction:" prefix the backend adds to the reasons it saves. */
@@ -39,6 +40,9 @@ export function cleanReason(reason: string): string {
 }
 
 export function describeMissingExtraction(email: Email): string {
+  if (email.status === "NEEDS_REVIEW") {
+    return `Flagged for human review: ${email.review_reason ? cleanReason(email.review_reason) : "Review required"}.`;
+  }
   if (email.review_reason) {
     const reason = cleanReason(email.review_reason).replace(/\.$/, "");
     return `Not extracted: ${reason}.`;

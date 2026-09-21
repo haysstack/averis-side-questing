@@ -57,6 +57,17 @@ export default function EmailDetailPanel({
             <span className="font-medium">Needs review:</span> {cleanReason(email.review_reason)}
           </p>
         )}
+        {email.status === "MISMATCH" && (
+          <div className="rounded-lg border border-rose-200 bg-rose-50/80 p-3 text-rose-900">
+            <p className="text-sm font-semibold flex items-center gap-1.5 text-rose-800">
+              <span className="inline-block size-2 rounded-full bg-rose-600"></span>
+              Discrepancies Detected — Amendment Required
+            </p>
+            <p className="mt-1 text-xs text-rose-700">
+              Discrepancies found between SI and draft B/L. Use Draft Reply below to request a correction from the carrier.
+            </p>
+          </div>
+        )}
         <div>
           <p className="text-sm font-medium text-gray-700">Attachments</p>
           <div className="mt-1.5">
@@ -79,6 +90,11 @@ export default function EmailDetailPanel({
       {email.category && email.category !== "SPAM" && (
         <footer className="flex flex-wrap items-center gap-2 border-t border-gray-200 px-5 py-3">
           <ReplyDrafter key={email.email_id} emailId={email.email_id} />
+          {email.status === "MISMATCH" && (
+            <span className="text-xs font-medium text-rose-700">
+              (B/L Amendment notice)
+            </span>
+          )}
           {email.category === "SI_REQUEST" && <CreateSiLink emailId={email.email_id} />}
         </footer>
       )}
