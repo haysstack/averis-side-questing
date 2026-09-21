@@ -181,12 +181,22 @@ export default async function DashboardView() {
               <PrimaryLink
                 href={routes.extraction()}
                 title="Email Inbox"
+                icon={
+                  <svg className="size-4" fill="none" viewBox="0 0 24 24" strokeWidth={1.75} stroke="currentColor" aria-hidden="true">
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M21.75 6.75v10.5a2.25 2.25 0 01-2.25 2.25h-15a2.25 2.25 0 01-2.25-2.25V6.75m19.5 0A2.25 2.25 0 0019.5 4.5h-15a2.25 2.25 0 00-2.25 2.25m19.5 0v.243a2.25 2.25 0 01-1.07 1.916l-7.5 4.615a2.25 2.25 0 01-2.36 0L3.32 8.91a2.25 2.25 0 01-1.07-1.916V6.75" />
+                  </svg>
+                }
                 description="View, filter, and inspect incoming shipping emails with AI categorization."
                 action="Open Inbox"
               />
               <PrimaryLink
                 href={routes.home}
                 title="Human Review"
+                icon={
+                  <svg className="size-4" fill="none" viewBox="0 0 24 24" strokeWidth={1.75} stroke="currentColor" aria-hidden="true">
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.501 20.118a7.5 7.5 0 0114.998 0A17.933 17.933 0 0112 21.75c-2.676 0-5.216-.584-7.499-1.632z" />
+                  </svg>
+                }
                 description="Audit and resolve flagged edge cases and unreadable documents."
                 action="Open Review Queue"
                 highlight={needsReviewCount > 0}
@@ -196,6 +206,11 @@ export default async function DashboardView() {
               <PrimaryLink
                 href={routes.extraction("bl-amendments")}
                 title="BL Amendments"
+                icon={
+                  <svg className="size-4" fill="none" viewBox="0 0 24 24" strokeWidth={1.75} stroke="currentColor" aria-hidden="true">
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M7.5 21L3 16.5m0 0L7.5 12M3 16.5h13.5m0-13.5L21 7.5m0 0L16.5 12M21 7.5H7.5" />
+                  </svg>
+                }
                 description="Compare draft BLs against SIs and draft carrier correction emails."
                 action="View Amendments"
                 highlight={mismatchCount > 0}
@@ -205,6 +220,11 @@ export default async function DashboardView() {
               <PrimaryLink
                 href={siCreationHref}
                 title="SI Creation"
+                icon={
+                  <svg className="size-4" fill="none" viewBox="0 0 24 24" strokeWidth={1.75} stroke="currentColor" aria-hidden="true">
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L10.582 16.07a4.5 4.5 0 01-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 011.13-1.897l8.932-8.931zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0115.75 21H5.25A2.25 2.25 0 013 18.75V8.25A2.25 2.25 0 015.25 6H10" />
+                  </svg>
+                }
                 description="Create and edit Shipping Instructions. Directs to the latest SI request."
                 action="Launch Editor"
               />
@@ -282,6 +302,7 @@ function PrimaryLink({
   title,
   description,
   action,
+  icon,
   highlight = false,
   badge = null,
   badgeType = "neutral",
@@ -290,6 +311,7 @@ function PrimaryLink({
   title: string;
   description: string;
   action: string;
+  icon?: React.ReactNode;
   highlight?: boolean;
   badge?: string | number | null;
   badgeType?: "neutral" | "warning";
@@ -310,7 +332,20 @@ function PrimaryLink({
     >
       <div>
         <div className="flex flex-wrap items-center justify-between gap-1.5">
-          <h3 className="text-base font-semibold text-navy">{title}</h3>
+          <div className="flex items-center gap-2.5 min-w-0">
+            {icon && (
+              <span
+                className={`flex size-7 shrink-0 items-center justify-center rounded-lg transition-colors ${
+                  highlight
+                    ? "bg-tangerine/15 text-orange-950 group-hover:bg-tangerine group-hover:text-white"
+                    : "bg-navy/5 text-navy group-hover:bg-navy group-hover:text-white"
+                }`}
+              >
+                {icon}
+              </span>
+            )}
+            <h3 className="text-base font-semibold text-navy">{title}</h3>
+          </div>
           {badge && (
             <span className={`rounded-full px-2 py-0.5 text-[10px] font-semibold shrink-0 whitespace-nowrap ${badgeClasses}`}>
               {badge}
