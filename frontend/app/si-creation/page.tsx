@@ -484,10 +484,10 @@ function SICreationContent() {
 
   if (loading) {
     return (
-      <main className="min-h-screen bg-[#FFF9F0] px-6 py-12 text-[#485C8B]">
-        <div className="mx-auto max-w-5xl rounded-xl border border-[#FDD58D] bg-white p-12 text-center shadow-sm">
-          <div className="inline-block h-8 w-8 animate-spin rounded-full border-4 border-[#6F8AB7] border-t-transparent"></div>
-          <p className="mt-4 text-base font-medium">Extracting Shipping Instruction details…</p>
+      <main className="min-h-screen bg-gray-50 px-6 py-12 text-gray-900">
+        <div className="mx-auto max-w-5xl rounded-xl border border-gray-200 bg-white p-12 text-center shadow-sm">
+          <div className="inline-block h-8 w-8 animate-spin rounded-full border-4 border-navy border-t-transparent"></div>
+          <p className="mt-4 text-base font-medium text-gray-700">Extracting Shipping Instruction details…</p>
         </div>
       </main>
     );
@@ -495,17 +495,17 @@ function SICreationContent() {
 
   if (error || !draft) {
     return (
-      <main className="min-h-screen bg-[#FFF9F0] px-6 py-12 text-[#485C8B]">
+      <main className="min-h-screen bg-gray-50 px-6 py-12 text-gray-900">
         <div className="mx-auto max-w-xl rounded-xl border border-red-300 bg-red-50 p-8 text-center text-red-800 shadow-sm">
           <h2 className="text-lg font-bold">Error Generating SI Draft</h2>
           <p className="mt-2 text-sm">{error || "Could not retrieve email data."}</p>
           <div className="mt-6 flex justify-center gap-3">
-            <Link href="/inbox" className="rounded-lg border border-[#6F8AB7] bg-white px-4 py-2 text-sm text-[#485C8B] hover:bg-[#EAF0F8]">
-              ← Back to Inbox
+            <Link href="/extraction" className="rounded-lg border border-gray-300 bg-white px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
+              ← Inbox
             </Link>
             <button
               onClick={() => window.location.reload()}
-              className="rounded-lg bg-[#485C8B] px-4 py-2 text-sm text-white hover:bg-[#6F8AB7]"
+              className="rounded-lg bg-navy px-4 py-2 text-sm text-white hover:bg-navy/90"
             >
               Retry
             </button>
@@ -516,18 +516,18 @@ function SICreationContent() {
   }
 
   return (
-    <main className="min-h-screen bg-[#FFF9F0] text-[#485C8B]">
+    <main className="min-h-screen bg-gray-50 text-gray-900">
       {/* Top Navigation Bar */}
-      <nav className="border-b border-[#FDD58D] bg-white px-6 py-3 shadow-sm">
+      <nav className="border-b border-gray-200 bg-white px-6 py-3 shadow-sm">
         <div className="mx-auto flex max-w-7xl items-center justify-between">
           <div className="flex items-center gap-3">
             <Link
-              href="/inbox"
-              className="flex items-center gap-1.5 rounded-lg border border-[#B9C8DF] px-3 py-1.5 text-xs font-semibold text-[#485C8B] hover:bg-[#FFF4DF]"
+              href="/extraction"
+              className="flex items-center gap-1.5 rounded-lg border border-gray-300 bg-white px-3 py-1.5 text-xs font-semibold text-gray-700 hover:bg-gray-100 transition-colors"
             >
-              ← Inbox
+              ← 
             </Link>
-            <span className="rounded-full bg-[#EAF0F8] px-2.5 py-0.5 text-xs font-bold text-[#485C8B]">
+            <span className="rounded-full bg-gray-100 px-2.5 py-0.5 text-xs font-bold text-gray-800">
               {draft.email_id}
             </span>
           </div>

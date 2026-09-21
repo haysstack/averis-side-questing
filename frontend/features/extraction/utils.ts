@@ -21,6 +21,7 @@ export function parseListQuery(raw: RawSearchParams): ListQuery {
   const sort = first(raw.sort);
   const field = first(raw.field);
   const priority = first(raw.priority);
+  const status = first(raw.status);
 
   return {
     page: Number.isFinite(page) && page >= 1 ? page : 1,
@@ -31,6 +32,7 @@ export function parseListQuery(raw: RawSearchParams): ListQuery {
     priority:
       priority === "High" || priority === "Medium" || priority === "Low" ? priority : undefined,
     attachments: first(raw.attachments) === "1",
+    status: status?.trim() || undefined,
   };
 }
 
@@ -39,6 +41,7 @@ export function buildHref(basePath: string, params: Partial<ListQuery>): string 
   const search = new URLSearchParams();
   if (params.page && params.page > 1) search.set("page", String(params.page));
   if (params.sort) search.set("sort", params.sort);
+  if (params.status) search.set("status", params.status);
   if (params.q) {
     search.set("q", params.q);
     if (params.field && params.field !== "all") search.set("field", params.field);

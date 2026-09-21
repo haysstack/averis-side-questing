@@ -48,6 +48,14 @@ export const EXTRACTION_VIEWS: ExtractionViewConfig[] = [
     count: (s) => s.by_category.BL_COMPARISON ?? 0,
   },
   {
+    slug: "bl-amendments",
+    label: "BL Amendments",
+    title: "BL amendment requests",
+    description: "SI and BL comparisons with detected discrepancies requiring correction requests to the carrier.",
+    filters: { category: "BL_COMPARISON", status: "MISMATCH" },
+    count: (s) => s.by_status.MISMATCH ?? 0,
+  },
+  {
     slug: "si-requests",
     label: "SI Creation Requests",
     title: "SI creation requests",
@@ -99,6 +107,21 @@ export function buildSidebarSections(
 ): SidebarSection[] {
   const sections: SidebarSection[] = [
     {
+      title: "Workspaces",
+      items: [
+        {
+          href: routes.home,
+          label: "Human Review",
+          count: stats ? (stats.needs_review ?? stats.by_status.NEEDS_REVIEW ?? null) : null,
+        },
+        {
+          href: routes.siCreation(),
+          label: "SI Editor",
+        },
+      ],
+    },
+    {
+      title: "Email Inbox",
       items: EXTRACTION_VIEWS.map((view) => ({
         href: routes.extraction(view.slug || undefined),
         label: view.label,

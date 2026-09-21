@@ -5,14 +5,15 @@
  */
 export const routes = {
   home: "/",
+  dashboard: "/dashboard",
 
-  // Extraction (this feature)
+  // Extraction (classified inbox)
   extraction: (slug?: string) => (slug ? `/extraction/${slug}` : "/extraction"),
 
   // Teammates' pages. Agree on these paths with them.
   email: (emailId: string) => `/emails/${encodeURIComponent(emailId)}`,
-  // Teammate's SI creation page. Change the path here if it lives elsewhere.
-  siCreation: (emailId: string) => `/si-creation?email_id=${encodeURIComponent(emailId)}`,
-  // comparison: (emailId: string) => `/comparison/${encodeURIComponent(emailId)}`,
-  // review: (emailId: string) => `/review/${encodeURIComponent(emailId)}`,
+  // Teammate's SI creation page.
+  siCreation: (emailId?: string) =>
+    emailId ? `/si-creation?email_id=${encodeURIComponent(emailId)}` : "/si-creation",
+  review: "/",
 } as const;

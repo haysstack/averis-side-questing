@@ -27,7 +27,7 @@ export default function FilterBar({ basePath, query }: { basePath: string; query
     go({ q: undefined });
   }
 
-  const active = Boolean(query.q || query.priority || query.attachments);
+  const active = Boolean(query.q);
 
   return (
     <div className="mb-6 rounded-lg border border-gray-200 bg-white p-4">
@@ -74,41 +74,17 @@ export default function FilterBar({ basePath, query }: { basePath: string; query
         </button>
       </form>
 
-      <div className="mt-3 flex flex-wrap items-center justify-end gap-3 text-sm">
-        {active && (
+      {active && (
+        <div className="mt-2.5 flex items-center text-sm">
           <button
             type="button"
-            onClick={() => router.push(buildHref(basePath, { sort: query.sort }))}
-            className="mr-auto text-navy underline hover:no-underline"
+            onClick={clearSearch}
+            className="text-navy underline hover:no-underline"
           >
-            Clear search and filters
+            Clear search
           </button>
-        )}
-        <label className="text-gray-700">
-          Priority{" "}
-          <select
-            value={query.priority ?? ""}
-            onChange={(event) =>
-              go({ priority: (event.target.value || undefined) as EmailPriority | undefined })
-            }
-            className={`${INPUT} ml-1`}
-          >
-            <option value="">All</option>
-            <option value="High">High</option>
-            <option value="Medium">Medium</option>
-            <option value="Low">Low</option>
-          </select>
-        </label>
-        <label className="flex cursor-pointer items-center gap-2 rounded-md border border-gray-300 bg-white px-2.5 py-1.5 text-gray-700">
-          <input
-            type="checkbox"
-            checked={query.attachments}
-            onChange={(event) => go({ attachments: event.target.checked })}
-            className="size-4 cursor-pointer accent-navy"
-          />
-          Has attachments
-        </label>
-      </div>
+        </div>
+      )}
     </div>
   );
 }
