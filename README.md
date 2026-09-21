@@ -158,6 +158,7 @@ docker compose up --build
 # 2. Backend
 cd backend
 pip install -r requirements.txt
+venv\Scripts\activate
 uvicorn main:app --reload
 
 # 3. Frontend
